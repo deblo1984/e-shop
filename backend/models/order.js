@@ -38,12 +38,13 @@ const orderSchema = mongoose.Schema({
                 type: Number,
                 required: true
             },
+            image: {
+                type: String,
+                required: true
+            },
             price: {
                 type: Number,
                 required: true
-            },
-            image: {
-                type: String,
             },
             product: {
                 type: mongoose.Schema.Types.ObjectId,
@@ -63,6 +64,7 @@ const orderSchema = mongoose.Schema({
     paidAt: {
         type: Date
     },
+
     itemsPrice: {
         type: Number,
         required: true,
@@ -95,6 +97,7 @@ const orderSchema = mongoose.Schema({
         type: Date,
         default: Date.now
     }
+
 })
 
 module.exports = mongoose.model('Order', orderSchema)

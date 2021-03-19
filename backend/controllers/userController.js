@@ -37,13 +37,13 @@ exports.loginUser = asyncHandler(async (req, res, next) => {
     const user = await User.findOne({ email }).select('+password');
 
     if (!user) {
-        return next(new ErrorHandler('Email not found'), 401);
+        return next(new ErrorHandler('Email not found', 401));
     }
 
     //check if password is correct or not
     const isPasswordMatched = await user.comparePassword(password);
     if (!isPasswordMatched) {
-        return next(new ErrorHandler('Invalid password'), 401);
+        return next(new ErrorHandler('Invalid password', 401));
     }
 
     sendToken(user, 200, res)
@@ -88,7 +88,7 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
     //check previous password
     const isMatched = await user.comparePassword(req.body.oldPassword);
     if (!isMatched) {
-        return next(new ErrorHandler('old password is incorrect'), 400);
+        return next(new ErrorHandler('old password is incorrect', 400));
     }
 
     user.password = req.body.password;
@@ -117,7 +117,7 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
     const user = await User.findOne({ email: req.body.email });
 
     if (!user) {
-        return next(new ErrorHandler('email not found'), 401);
+        return next(new ErrorHandler('email not found', 401));
     }
     const resetToken = user.getResetPasswordToken();
     await user.save({ validateBeforeSave: false })
@@ -188,7 +188,7 @@ exports.getUserDetails = asyncHandler(async (req, res, next) => {
     const users = await User.findById(req.params.id);
 
     if (!users) {
-        return next(new ErrorHandler('user not found'), 401)
+        return next(new ErrorHandler('user not found', 401))
     }
 
     res.status(200).json({
@@ -223,7 +223,7 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 exports.deleteUser = asyncHandler(async (req, res, next) => {
     const user = await User.findById(req.params.id);
     if (!user) {
-        return next(new ErrorHandler('usr not found'), 401)
+        return next(new ErrorHandler('usr not found', 401))
     }
 
     await user.remove();

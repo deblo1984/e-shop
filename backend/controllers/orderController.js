@@ -1,9 +1,8 @@
 const Order = require('../models/order');
-const Product = require('../models/order');
+const Product = require('../models/product');
 const ErrorHandler = require('../utils/errorHandler');
 const asyncHandler = require('express-async-handler');
 const user = require('../models/user');
-const catchAsync = require('../middlewares/catchAsync');
 
 //create new order => /api/v1/order/create
 exports.CreateOrder = asyncHandler(async (req, res, next) => {
@@ -14,7 +13,7 @@ exports.CreateOrder = asyncHandler(async (req, res, next) => {
         taxPrice,
         shippingPrice,
         totalPrice,
-        paymentInfo,
+        paymentInfo
 
     } = req.body;
 
@@ -102,9 +101,8 @@ exports.getOrderDetails = asyncHandler(async (req, res, next) => {
 
 //@admin
 // update order proccess
-//@ /api/v1/admin/orders/:id
-// Update / Process order - ADMIN  =>   /api/v1/admin/order/:id
-exports.updateOrder = catchAsync(async (req, res, next) => {
+//@ /api/v1/admin/order/:id
+exports.updateOrder = asyncHandler(async (req, res, next) => {
     const order = await Order.findById(req.params.id)
 
     if (order.orderStatus === 'Delivered') {
@@ -130,5 +128,23 @@ async function updateStock(id, quantity) {
 
     product.stock = product.stock - quantity;
 
-    await product.save()
+    await product.save({ validateBeforeSave: false })
 }
+
+//@admin
+// delete order 
+//@ /api/v1/admin/order/:id
+
+exports.deleteOrder = asyncHandler(async (req, res, next) => {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+        return next(ErrorHandler('Order not found', 400));
+    }
+
+    await order.remove();
+
+    res.status(200).json({
+        success: true
+    })
+})
