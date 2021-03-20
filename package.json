@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node backend/server.js",
     "dev": "SET NODE_ENV=DEVELOPMENT& nodemon backend/server",
+    "devpg": "SET NODE_ENV=DEVELOPMENT& nodemon pgbackend/server",
     "prod": "SET NODE_ENV=PRODUCTION& nodemon backend/server",
     "seeder": "node backend/utils/seeder.js"
   },
@@ -16,13 +17,18 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.1",
     "nodemailer": "^6.5.0",
+    "pg": "^8.5.1",
+    "pg-hstore": "^2.3.3",
     "save": "^2.4.0",
+    "sequelize": "^6.5.1",
+    "sequelize-cli": "^6.2.0",
     "validator": "^13.5.2"
   },
   "devDependencies": {

@@ -28,7 +28,7 @@ router.route('/password/forgot').post(forgotPassword);
 router.route('/password/reset/:token').put(resetPassword);
 
 //admin routes
-router.route('/admin/users').get(isAuthenticatedUser, authorizeRoles('admin'), getAllUser);
+router.route('/admin/users').get(isAuthenticatedUser, authorizeRoles('admin',), getAllUser);
 router.route('/admin/users/:id').get(isAuthenticatedUser, authorizeRoles('admin'), getUserDetails)
     .put(isAuthenticatedUser, authorizeRoles('admin'), updateUser)
     .delete(isAuthenticatedUser, authorizeRoles('admin'), deleteUser)
