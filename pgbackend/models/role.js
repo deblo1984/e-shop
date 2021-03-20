@@ -7,6 +7,6 @@ module.exports = (sequelize, Sequelize) => {
         name: {
             type: Sequelize.STRING
         }
-    });
+    }, { underscored: true });
     return Role
 }

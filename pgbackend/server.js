@@ -1,9 +1,12 @@
 const app = require('./app')
-//const db = require('./models');
-//const Role = db.role;
+const db = require('./models');
+const Role = db.role;
 
-//db.sequelize.sync()
-/*function initial() {
+db.sequelize.sync({ force: true }).then(() => {
+    console.log('Drop and Resync Db');
+    initial();
+});
+function initial() {
     Role.create({
         id: 1,
         name: 'user'
@@ -17,7 +20,7 @@ const app = require('./app')
         id: 3,
         name: 'admin'
     })
-}*/
+}
 
 if (process.env.NODE_ENV !== 'PRODUCTION') require('dotenv').config({ path: 'backend/config/config.env' })
 
