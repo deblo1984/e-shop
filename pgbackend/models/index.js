@@ -6,6 +6,7 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     host: dbConfig.Host,
     dialect: dbConfig.dialect,
     operatorAliases: false,
+    logging: false,
     pool: {
         max: dbConfig.poolmax,
         min: dbConfig.pool.min,
@@ -52,7 +53,8 @@ db.role.belongsToMany(db.user, {
 db.user.belongsToMany(db.role, {
     through: 'user_roles',
     foreignKey: 'user_id',
-    otherKey: 'role_id'
+    otherKey: 'role_id',
+    logging: false,
 });
 
 db.ROLES = ['user', 'admin', 'moderator']
