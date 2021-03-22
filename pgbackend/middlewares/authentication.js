@@ -3,7 +3,7 @@ const asynHandler = require('express-async-handler');
 const ErrorHandler = require('../utils/errorHandler');
 const db = require('../models');
 
-exports.isAuthenticatedUser = asynHandler(async (req, res, next) => {
+exports.isAuthenticated = asynHandler(async (req, res, next) => {
     const { token } = req.cookies
     if (!token) {
         return next(new ErrorHandler('Login first to access this resource', 401));

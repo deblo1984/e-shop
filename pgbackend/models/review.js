@@ -12,6 +12,12 @@ module.exports = (sequelize, Sequelize) => {
         comment: {
             type: Sequelize.TEXT,
             allowNull: false
+        },
+        productId: {
+            type: Sequelize.UUID
+        },
+        userId: {
+            type: Sequelize.UUID
         }
     }, {
         underscored: true

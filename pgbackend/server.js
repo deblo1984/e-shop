@@ -7,6 +7,7 @@ const tutorial = require('./routes/tutorial.routes');
 const category = require('./routes/category.routes');
 const product = require('./routes/product.routes');
 const user = require('./routes/user.routes');
+const review = require('./routes/review.routes');
 const db = require('./models')
 
 dotenv.config();
@@ -19,7 +20,7 @@ if (process.env.NODE_ENV === 'DEVELOPMENT') {
 
 const Role = db.role;
 
-db.sequelize.sync({ force: true }).then(() => {
+db.sequelize.sync()/*.then(() => {
     console.log('Drop and Resync Db');
     initial();
 });
@@ -36,7 +37,7 @@ function initial() {
     Role.create({
         name: "admin"
     });
-}
+}*/
 
 app.use(express.json());
 app.use(cookieParser());
@@ -44,7 +45,8 @@ app.use(cookieParser());
 app.use('/api/', tutorial);
 app.use('/api/', category);
 app.use('/api/', product);
-app.use('/api', user);
+app.use('/api/', user);
+app.use('/api/', review);
 
 app.use(notFound);
 app.use(errorHandler);

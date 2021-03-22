@@ -6,7 +6,6 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     host: dbConfig.Host,
     dialect: dbConfig.dialect,
     operatorAliases: false,
-    logging: false,
     pool: {
         max: dbConfig.poolmax,
         min: dbConfig.pool.min,
@@ -29,19 +28,19 @@ db.category = require('../models/category')(sequelize, Sequelize);
 db.review = require('../models/review')(sequelize, Sequelize);
 
 //define user has many products
-db.user.hasMany(db.product, {
-    foreignKey: 'user_id'
-})
-
+db.user.hasMany(db.product);
 //define product has many photo
 db.product.hasMany(db.photo);
 db.photo.belongsTo(db.product, { onDelete: 'CASCADE' })
 
-db.category.hasOne(db.product);
+db.category.hasMany(db.product);
 db.product.belongsTo(db.category);
 
 db.product.hasMany(db.review);
-db.review.belongsTo(db.user);
+db.review.belongsTo(db.product, { foreignKey: 'userId' });
+
+db.user.hasMany(db.review);
+db.review.belongsTo(db.user, { foreignKey: 'userId' });
 
 
 db.role.belongsToMany(db.user, {
