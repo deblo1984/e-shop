@@ -11,6 +11,9 @@ exports.isAuthenticatedUser = asynHandler(async (req, res, next) => {
 
     const decode = jwt.verify(token, process.env.JWT_SECRET)
     req.user = await db.user.findByPk(decode.id, { include: [db.role] });
+    if (req.user === null) {
+        return next(new ErrorHandler('Invalid token', 401));
+    }
     //console.log(req.user)
 
     next()

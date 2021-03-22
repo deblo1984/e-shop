@@ -82,3 +82,4 @@ exports.logout = asyncHandler(async (req, res) => {
         message: 'Logged out'
     })
 })
+

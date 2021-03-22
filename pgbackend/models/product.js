@@ -1,10 +1,17 @@
 module.exports = (sequelize, Sequelize) => {
     const Product = sequelize.define('product', {
+        id: {
+            type: Sequelize.UUID,
+            defaultValue: Sequelize.UUIDV1,
+            primaryKey: true
+        },
         name: {
-            type: Sequelize.STRING
+            type: Sequelize.STRING,
+            allowNull: false
         },
         description: {
-            type: Sequelize.TEXT
+            type: Sequelize.TEXT,
+            allowNull: false
         },
         rating: {
             type: Sequelize.DOUBLE,
