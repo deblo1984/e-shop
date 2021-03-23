@@ -29,6 +29,12 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.INTEGER,
             defaultValue: 0
         },
+        userId: {
+            type: Sequelize.UUID,
+        },
+        categoryId: {
+            type: Sequelize.UUID
+        }
     }, {
         underscored: true
     })

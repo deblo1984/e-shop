@@ -31,16 +31,16 @@ db.review = require('../models/review')(sequelize, Sequelize);
 db.user.hasMany(db.product);
 //define product has many photo
 db.product.hasMany(db.photo);
-db.photo.belongsTo(db.product, { onDelete: 'CASCADE' })
+db.photo.belongsTo(db.product)
 
 db.category.hasMany(db.product);
 db.product.belongsTo(db.category);
 
 db.product.hasMany(db.review);
-db.review.belongsTo(db.product, { foreignKey: 'userId' });
+db.review.belongsTo(db.product);
 
 db.user.hasMany(db.review);
-db.review.belongsTo(db.user, { foreignKey: 'userId' });
+db.review.belongsTo(db.user);
 
 
 db.role.belongsToMany(db.user, {
@@ -53,7 +53,6 @@ db.user.belongsToMany(db.role, {
     through: 'user_roles',
     foreignKey: 'user_id',
     otherKey: 'role_id',
-    logging: false,
 });
 
 db.ROLES = ['user', 'admin', 'moderator']

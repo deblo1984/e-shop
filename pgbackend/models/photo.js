@@ -5,7 +5,7 @@ module.exports = (sequelize, Sequelize) => {
             defaultValue: Sequelize.UUIDV1,
             primaryKey: true
         },
-        public_id: {
+        publicId: {
             type: Sequelize.STRING
         },
         url: {
@@ -14,6 +14,9 @@ module.exports = (sequelize, Sequelize) => {
         isMain: {
             type: Sequelize.BOOLEAN,
             defaultValue: false
+        },
+        productId: {
+            type: Sequelize.UUID
         }
     }, { underscored: true })
     return Photo;

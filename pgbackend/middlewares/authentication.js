@@ -22,12 +22,16 @@ exports.isAuthenticated = asynHandler(async (req, res, next) => {
 exports.authorizeRoles = (...roles) => {
     return (req, res, next) => {
         auth = req.user.roles
+        let hasil = []
         for (let i = 0; i < auth.length; i++) {
             //console.log(auth[i].name)
-            if (!roles.includes(auth[i].name)) {
-                return next(
-                    new ErrorHandler(`Role not allowed`, 403))
-            }
+            hasil.push(auth[i].name)
+        }
+        var intersections = roles.filter(e => hasil.indexOf(e) !== -1);
+        console.log(intersections);
+        if (intersections.length <= 0) {
+            return next(
+                new ErrorHandler(`Role not allowed`, 403))
         }
         next()
     }

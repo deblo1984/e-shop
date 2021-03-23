@@ -4,14 +4,24 @@ const { getPagination, getPagingData } = require('../utils/pagination');
 
 const Product = db.product;
 const Photo = db.photo;
+const Review = db.review;
+const User = db.user;;
 const Op = db.Sequelize.Op;
 
 exports.create = asyncHandler(async (req, res) => {
-    const product = await Product.create(req.body
-        , {
-            include: [Photo]
-        })
+    const {
+        name,
+        description,
+        price,
+        stock
+    } = req.body
+    const userId = req.user.id
 
+    const product = await Product.create({
+        name, description, price, stock, userId
+    }, {
+        include: [Photo]
+    })
 
     if (!product) {
         return res.status(401).json({
@@ -78,5 +88,25 @@ exports.update = asyncHandler(async (req, res) => {
             message: 'Failed update product'
         })
     }
+
+})
+
+exports.productReviews = asyncHandler(async (req, res) => {
+    const product = await Product.findByPk(req.params.id, {
+        attributes:
+            { exclude: ['created_at', 'updated_at'] },
+        include: {
+            model: Review,
+            attributes: ['rating', 'comment', 'updated_at'],
+            include: {
+                model: User,
+                attributes: ['name']
+            }
+        }
+    })
+
+    res.status(200).send({
+        product
+    })
 
 })

@@ -8,6 +8,7 @@ const category = require('./routes/category.routes');
 const product = require('./routes/product.routes');
 const user = require('./routes/user.routes');
 const review = require('./routes/review.routes');
+const photo = require('./routes/photo.routes');
 const db = require('./models')
 
 dotenv.config();
@@ -47,6 +48,7 @@ app.use('/api/', category);
 app.use('/api/', product);
 app.use('/api/', user);
 app.use('/api/', review);
+app.use('/api/', photo);
 
 app.use(notFound);
 app.use(errorHandler);

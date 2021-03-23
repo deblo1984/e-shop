@@ -4,10 +4,11 @@ const { isAuthenticated, authorizeRoles } = require('../middlewares/authenticati
 
 const router = express.Router();
 
-router.route('/product').post(isAuthenticated, authorizeRoles('admin', 'user'), product.create);
-router.route('/product').get(isAuthenticated, authorizeRoles('admin', 'user'), product.findAll);
-router.route('/product/:id').get(product.findOne);
-router.route('/product/:id').delete(product.delete);
-router.route('/product/:id').put(product.update);
+router.route('/products/create').post(isAuthenticated, authorizeRoles('admin', 'user'), product.create);
+router.route('/products').get(isAuthenticated, authorizeRoles('admin', 'user'), product.findAll);
+router.route('/products/:id').get(product.findOne);
+router.route('/products/:id').delete(product.delete);
+router.route('/products/:id').put(product.update);
+router.route('/products/:id/review').get(isAuthenticated, product.productReviews);
 
 module.exports = router
