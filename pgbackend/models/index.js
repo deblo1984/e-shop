@@ -6,6 +6,7 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     host: dbConfig.Host,
     dialect: dbConfig.dialect,
     operatorAliases: false,
+    logging: false,
     pool: {
         max: dbConfig.poolmax,
         min: dbConfig.pool.min,
@@ -31,7 +32,7 @@ db.review = require('../models/review')(sequelize, Sequelize);
 db.user.hasMany(db.product);
 //define product has many photo
 db.product.hasMany(db.photo);
-db.photo.belongsTo(db.product)
+db.photo.belongsTo(db.product, { foreignKey: 'productId' })
 
 db.category.hasMany(db.product);
 db.product.belongsTo(db.category);

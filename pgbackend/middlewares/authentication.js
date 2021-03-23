@@ -28,7 +28,7 @@ exports.authorizeRoles = (...roles) => {
             hasil.push(auth[i].name)
         }
         var intersections = roles.filter(e => hasil.indexOf(e) !== -1);
-        console.log(intersections);
+        //console.log(intersections);
         if (intersections.length <= 0) {
             return next(
                 new ErrorHandler(`Role not allowed`, 403))
