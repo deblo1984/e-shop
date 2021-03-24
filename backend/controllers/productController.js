@@ -43,7 +43,7 @@ exports.create = asyncHandler(async (req, res) => {
     } catch (error) {
         console.log(error.message);
         await t.rollback
-        res.status(500).send({
+        return res.status(500).send({
             message: 'shit happen'
         })
     }
@@ -55,7 +55,8 @@ exports.findAll = (req, res) => {
     const condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
 
     Product.findAndCountAll({
-        distinct: true, order: [['created_at', 'desc']], where: condition, limit, offset, include: { model: Photo, required: true, separate: true },
+        distinct: true, order: [['created_at', 'desc']], condition, limit, offset,
+        include: { model: Photo, required: true, separate: true },
     })
         .then(data => {
             //const response = getPagingData(products, page, limit);

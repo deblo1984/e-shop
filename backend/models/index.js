@@ -6,7 +6,7 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     host: dbConfig.Host,
     dialect: dbConfig.dialect,
     operatorAliases: false,
-    logging: false,
+    logging: true,
     pool: {
         max: dbConfig.poolmax,
         min: dbConfig.pool.min,
@@ -23,10 +23,12 @@ db.sequelize = sequelize;
 db.user = require('./user')(sequelize, Sequelize);
 db.role = require('./role')(sequelize, Sequelize);
 db.tutorial = require('./tutorial')(sequelize, Sequelize);
-db.product = require('../models/product')(sequelize, Sequelize);
-db.photo = require('../models/photo')(sequelize, Sequelize)
-db.category = require('../models/category')(sequelize, Sequelize);
-db.review = require('../models/review')(sequelize, Sequelize);
+db.product = require('./product')(sequelize, Sequelize);
+db.photo = require('./photo')(sequelize, Sequelize)
+db.category = require('./category')(sequelize, Sequelize);
+db.review = require('./review')(sequelize, Sequelize);
+db.order = require('./order')(sequelize, Sequelize);
+db.orderItems = require('./orderItems')(sequelize, Sequelize);
 
 //define user has many products
 db.user.hasMany(db.product);
@@ -43,6 +45,14 @@ db.review.belongsTo(db.product);
 db.user.hasMany(db.review);
 db.review.belongsTo(db.user);
 
+db.user.hasMany(db.order);
+db.order.belongsTo(db.user);
+
+db.order.hasMany(db.orderItems);
+db.orderItems.belongsTo(db.order, { foreignKey: 'orderId' });
+
+db.product.hasMany(db.orderItems);
+db.orderItems.belongsTo(db.product, { foreignKey: 'productId' });
 
 db.role.belongsToMany(db.user, {
     through: 'user_roles',
