@@ -4,9 +4,16 @@ const { isAuthenticated, authorizeRoles } = require('../middlewares/authenticati
 
 const router = express.Router();
 
-router.route('/order').post(isAuthenticated, order.create);
-router.route('/order').get(isAuthenticated, authorizeRoles('admin'), order.findAll);
-router.route('/order/:id').get(isAuthenticated, order.findOne);
-router.route('/order/:id/delivered').put(isAuthenticated, authorizeRoles('admin'), order.updateDelivered);
+//user routes
+router.route('/order/create').post(isAuthenticated, order.create);
+router.route('/orders').get(isAuthenticated, order.findAllByUserId);
+router.route('/orders/:id').get(isAuthenticated, order.getUserOrderDetails);
+
+//admin routes
+router.route('/admin/orders').get(isAuthenticated, authorizeRoles('admin'), order.findAll);
+router.route('/admin/order/:id').get(isAuthenticated, authorizeRoles('admin'), order.findOne)
+    .delete(isAuthenticated, authorizeRoles('admin'), order.delete);
+router.route('/admin/order/:id/status')
+    .put(isAuthenticated, authorizeRoles('admin'), order.updateStatus);
 
 module.exports = router

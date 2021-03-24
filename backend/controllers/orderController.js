@@ -11,6 +11,12 @@ const Product = db.product;
 const User = db.user;
 const Op = db.Sequelize.Op;
 
+//@user function
+//route => /api/order
+
+
+//@POST => create new order
+//route => /api/order/create
 exports.create = asyncHandler(async (req, res) => {
     const id = uuidv4();
     const t = await sequelize.transaction();
@@ -60,6 +66,63 @@ exports.create = asyncHandler(async (req, res) => {
     }
 })
 
+//@GET
+//route => /api/orders
+exports.findAllByUserId = (req, res) => {
+    const { page, size } = req.query;
+    const { limit, offset } = getPagination(page, size);
+
+    Order.findAndCountAll({
+        distinct: true, order: [['created_at', 'desc']], limit, offset,
+        where: { userId: req.user.id },
+        include: [{
+            model: User, attributes: ['id', 'name']
+        }]
+    }).then(data => {
+        const { count: totalItems, rows: orders } = data;
+        const currentPage = page ? +page : 1;
+        const totalPages = Math.ceil(totalItems / limit);
+        res.send({
+            totalItems,
+            orders,
+            totalPages,
+            currentPage
+        })
+    }).catch(err => {
+        console.log(err.message);
+        res.status(500).send({
+            message: 'shit happen'
+        })
+    })
+}
+
+exports.getUserOrderDetails = (req, res) => {
+    Order.findByPk(req.params.id,
+        {
+            include: [{
+                model: OrderItems, required: true, separate: true,
+                attributes: { exclude: ['createdAt', 'updatedAt', 'orderId'] },
+                include: [{ model: Product, attributes: ['name', 'id'] }]
+            }]
+        }).then(data => {
+            res.send({
+                success: true,
+                data
+            })
+        }).catch(err => {
+            console.log(err.message);
+            res.status(500).send({
+                success: false,
+                message: 'shit happen'
+            })
+        })
+}
+
+//@admin function
+//route => /api/admin/order
+
+//@GET
+//route => /api/admin/orders
 exports.findAll = (req, res) => {
     const { page, size } = req.query;
     const { limit, offset } = getPagination(page, size);
@@ -110,12 +173,12 @@ exports.findOne = (req, res) => {
         })
 }
 
-exports.updateDelivered = (req, res) => {
+exports.updateStatus = (req, res) => {
     Order.findByPk(req.params.id,
         {
             include: [{
                 model: OrderItems, include: [{ model: Product }]
-            }, { model: User }]
+            }]
         }).then(order => {
             if (order.orderStatus === 'Delivered') {
                 return res.send({
@@ -123,7 +186,7 @@ exports.updateDelivered = (req, res) => {
                 })
             }
             //console.log(order)
-            Order.update({ orderStatus: 'Delivered' }, {
+            Order.update({ orderStatus: req.body.orderStatus }, {
                 where: { id: req.params.id }
             })
             //console.log(order.orderItems)
@@ -132,7 +195,7 @@ exports.updateDelivered = (req, res) => {
                 Product.findByPk(item.productId)
                     .then(product => {
                         const value = product.stock - item.quantity;
-                        console.log(product.stock)
+                        //console.log(product.stock)
                         Product.update({ stock: value }, { where: { id: product.id } })
                     }).catch(err => {
                         res.status(500).send({
@@ -152,6 +215,19 @@ exports.updateDelivered = (req, res) => {
         })
 }
 
-function updateStock(id, quantity) {
-    Product.findByPk(id, { attributes: ['id', 'stock', 'name'] })
+exports.delete = (req, res) => {
+    Order.destory({
+        where: { id: req.params.id }
+    }).then(result => {
+        res.status(200).send({
+            success: true,
+            message: 'Order has been deleted'
+        })
+    }).catch(err => {
+        console.log(err.message);
+        res.status(500).send({
+            success: false,
+            message: 'shit happend'
+        })
+    })
 }
