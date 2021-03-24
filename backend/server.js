@@ -1,32 +1,57 @@
-const app = require('./app')
-const connectDatabase = require('./config/database')
-
+const express = require('express');
+const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
+const morgan = require('morgan');
+const { notFound, errorHandler } = require('./middlewares/error')
+const tutorial = require('./routes/tutorial.routes');
+const category = require('./routes/category.routes');
+const product = require('./routes/product.routes');
+const user = require('./routes/user.routes');
+const review = require('./routes/review.routes');
+const photo = require('./routes/photo.routes');
+const db = require('./models')
 
-///handle uncaught exceptions
-process.on('uncaughtException', err => {
-    console.log(`ERROR: ${err.message}`);
-    console.log('Shutting down server due to uncaught exceptions');
-    process.exit(1);
-})
+dotenv.config();
 
-// Setting up config file
-if (process.env.NODE_ENV !== 'PRODUCTION') require('dotenv').config({ path: 'backend/config/config.env' })
+const app = express();
 
-// dotenv.config({ path: 'backend/config/config.env' })
+if (process.env.NODE_ENV === 'DEVELOPMENT') {
+    app.use(morgan('dev'))
+}
 
-// connecting to database
-connectDatabase();
+const Role = db.role;
 
-app.listen(process.env.PORT, () => {
-    console.log(`Server started on Port :${process.env.PORT} in ${process.env.NODE_ENV} mode.`)
-})
+db.sequelize.sync()/*.then(() => {
+    console.log('Drop and Resync Db');
+    initial();
+});
 
-// Handle Unhandled Promise rejections
-process.on('unhandledRejection', err => {
-    console.log(`ERROR: ${err.stack}`);
-    console.log('Shutting down the server due to Unhandled Promise rejection');
-    server.close(() => {
-        process.exit(1)
-    })
-})
+function initial() {
+    Role.create({
+        name: "user"
+    });
+
+    Role.create({
+        name: "moderator"
+    });
+
+    Role.create({
+        name: "admin"
+    });
+}*/
+
+app.use(express.json());
+app.use(cookieParser());
+
+app.use('/api/', tutorial);
+app.use('/api/', category);
+app.use('/api/', product);
+app.use('/api/', user);
+app.use('/api/', review);
+app.use('/api/', photo);
+
+app.use(notFound);
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 5000
+app.listen(PORT, console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`))

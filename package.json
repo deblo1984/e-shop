@@ -5,8 +5,10 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node backend/server.js",
-    "dev": "SET NODE_ENV=DEVELOPMENT& nodemon pgbackend/server",
+    "server": "nodemon backend/server",
+    "start": "node backend/server",
+    "client": "npm start --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
     "prodpg": "SET NODE_ENV=PRODUCTION& nodemon pgbackend/server",
     "prod": "SET NODE_ENV=PRODUCTION& nodemon backend/server",
     "seeder": "node backend/utils/seeder.js"
@@ -16,11 +18,13 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
+    "concurrently": "^6.0.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
+    "express-validator": "^6.10.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.1",
     "morgan": "^1.10.0",
@@ -31,8 +35,7 @@
     "save": "^2.4.0",
     "sequelize": "^6.5.1",
     "sequelize-cli": "^6.2.0",
-    "uuid": "^8.3.2",
-    "validator": "^13.5.2"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.7"

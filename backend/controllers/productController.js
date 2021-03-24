@@ -1,170 +1,138 @@
-const Product = require('../models/product');
+const db = require('../models');
 const asyncHandler = require('express-async-handler');
-const ErrorHandler = require('../utils/errorHandler');
-const APIFeatures = require('../utils/apiFeatures');
-const product = require('../models/product');
+const { getPagination } = require('../utils/pagination');
+const { sequelize } = require('../models');
 
+const Product = db.product;
+const Photo = db.photo;
+const Review = db.review;
+const User = db.user;;
+const Op = db.Sequelize.Op;
 
-//create new product
-// => /api/v1/admin/product
-exports.createProduct = asyncHandler(async (req, res, next) => {
+exports.create = asyncHandler(async (req, res) => {
+    const t = await sequelize.transaction();
+    const {
+        name,
+        description,
+        price,
+        stock,
+    } = req.body
+    const userId = req.user.id
+    photo = req.body.photos;
 
-    req.body.user = req.user.id;
+    try {
+        const product = await Product.create({
+            name, description, price, stock, userId
+        }, /*{
+            include: [Photo]
+        },*/ { transaction: t })
+        for (let i = 0; i < photo.length; i++) {
+            await Photo.create({
+                publicId: photo[i].publicId,
+                url: photo[i].url,
+                productId: product.id
 
-    const product = await Product.create(req.body)
+            }, { transaction: t })
+        }
 
-    res.status(201).json({
-        success: true,
-        product
-    })
+        await t.commit();
 
-})
-
-//HTTP GET
-//get all products => //api/v1/products?keyword=apple
-exports.getProducts = asyncHandler(async (req, res, next) => {
-
-    const resPerPage = 4;
-    const productCount = await Product.countDocuments()
-
-    const apiFeatures = new APIFeatures(Product.find(), req.query)
-        .search()
-        .filter()
-        .pagination(resPerPage)
-
-    const products = await apiFeatures.query;
-
-    res.status(200).json({
-        success: true,
-        count: products.length,
-        productCount,
-        products
-    })
-})
-
-//get Single product by=id
-// api/v1/product/:id
-exports.getSingleProduct = asyncHandler(async (req, res, next) => {
-    const product = await Product.findById(req.params.id)
-    if (!product) {
-        return next(new ErrorHandler('Product not found', 404));
-    }
-    res.status(200).json({
-        success: true,
-        product
-    })
-})
-
-///update product => api/v1/admin/product/:id
-exports.updateProduct = asyncHandler(async (req, res, next) => {
-    let product = await Product.findById(req.params.id);
-    if (!product) {
-        return next(new ErrorHandler('Product not found', 404));
-    }
-
-    product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true,
-        useFindAndModify: false
-    });
-
-    res.status(200).json({
-        success: true,
-        product
-    })
-
-})
-
-//delete product => /api/v1/admin/product/:id
-exports.deleteProduct = asyncHandler(async (req, res, next) => {
-
-    const product = await Product.findById(req.params.id);
-    if (!product) {
-        return next(new ErrorHandler('Product not found', 404));
-    }
-
-    await product.remove();
-
-    res.status(200).json({
-        success: true,
-        message: 'Product is deleted'
-    })
-})
-
-//@Authenticated user
-//@POST create user review
-// => /api/v1/review
-exports.createProductReview = asyncHandler(async (req, res, next) => {
-    const { rating, comment, productId } = req.body
-
-    const review = {
-        user: req.user._id,
-        name: req.user.name,
-        rating: Number(rating),
-        comment
-    }
-
-    const product = await Product.findById(productId);
-    const isReviewed = product.reviews.find(
-        r => r.user.toString() === req.user._id.toString());
-    if (isReviewed) {
-        product.reviews.forEach(review => {
-            if (review.user.toString() === req.user._id.toString()) {
-                review.comment = comment;
-                review.rating = rating;
-            }
+        return res.status(201).json({
+            success: true
         })
+    } catch (error) {
+        console.log(error.message);
+        await t.rollback
+        res.status(500).send({
+            message: 'shit happen'
+        })
+    }
+})
 
+exports.findAll = (req, res) => {
+    const { page, size, name } = req.query;
+    const { limit, offset } = getPagination(page, size);
+    const condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
+
+    Product.findAndCountAll({
+        distinct: true, order: [['created_at', 'desc']], where: condition, limit, offset, include: { model: Photo, required: true, separate: true },
+    })
+        .then(data => {
+            //const response = getPagingData(products, page, limit);
+            const { count: totalItems, rows: products } = data;
+            const currentPage = page ? +page : 1;
+            const totalPages = Math.ceil(totalItems / limit);
+            res.send({
+                totalItems,
+                products,
+                totalPages,
+                currentPage
+            });
+        }).catch(err => {
+            res.status(500).send({
+                message: 'shit happen'
+            })
+        })
+}
+
+exports.findOne = asyncHandler(async (req, res) => {
+    const product = await Product.findByPk(req.params.id, { include: Photo })
+    return res.json({
+        success: true,
+        product
+    })
+})
+
+exports.delete = asyncHandler(async (req, res) => {
+    const result = await Product.destroy({
+        where: { id: req.params.id }
+    })
+    if (result) {
+        res.status(201).json({
+            status: true
+        })
     } else {
-        product.reviews.push(review);
-        product.numOfReviews = product.reviews.length
+        res.status(400).json({
+            status: false,
+            message: 'cannot delete product'
+        })
+    }
+})
+
+exports.update = asyncHandler(async (req, res) => {
+    const product = await Product.update(req.body, {
+        where: { id: req.params.id }
+    })
+
+    if (product) {
+        res.status(201).json({
+            success: true
+        })
+    } else {
+        res.status(400).json({
+            success: false,
+            message: 'Failed update product'
+        })
     }
 
-    product.ratings = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length
-
-    await product.save();
-
-    res.status(200).json({
-        success: true
-    })
-
 })
 
-//GET PRODUCT REVIEWS
-//@GET
-// => /api/v1/reviews
-
-exports.getProductReviews = asyncHandler(async (req, res, next) => {
-    const product = await Product.findById(req.query.id);
-
-    res.status(200).json({
-        success: true,
-        reviews: product.reviews
-    })
-})
-
-//DELETE PRODUCT REVIEW
-//@DELETE
-//=> /api/v1/review/:_id
-
-exports.deleteReview = asyncHandler(async (req, res, next) => {
-    const product = await Product.findById(req.query.productId);
-
-    const reviews = product.reviews.filter(review => review._id.toString() !== req.query.id.toString());
-    const numOfReviews = reviews.length
-    const ratings = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length
-
-    await Product.findByIdAndUpdate(req.query.productId, {
-        reviews,
-        ratings,
-        numOfReviews
-    }, {
-        new: true,
-        runValidators: true,
-        useFindAndModify: false
+exports.productReviews = asyncHandler(async (req, res) => {
+    const product = await Product.findByPk(req.params.id, {
+        attributes:
+            { exclude: ['createdAt', 'updatedAt'] },
+        include: {
+            model: Review,
+            attributes: ['rating', 'comment'],
+            include: {
+                model: User,
+                attributes: ['id', 'name']
+            }
+        }
     })
 
-    res.status(200).json({
-        success: true
+    res.status(200).send({
+        product
     })
+
 })
