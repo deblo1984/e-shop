@@ -33,7 +33,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.UUID,
         },
         categoryId: {
-            type: Sequelize.UUID
+            type: Sequelize.UUID,
         }
     }, {
         underscored: true
