@@ -10,12 +10,12 @@ import {
     PRODUCT_DETAILS_SUCCESS
 } from '../constants/productConstant'
 
-export const getProducts = () => async (dispatch) => {
+export const getProducts = (keyword = '', currentPage = 1) => async (dispatch) => {
     try {
 
         dispatch({ type: ALL_PRODUCTS_REQUEST })
 
-        const { data } = await axios.get('/api/products')
+        const { data } = await axios.get(`/api/products?name=${keyword}&page=${currentPage}`)
 
         dispatch({
             type: ALL_PRODUCTS_SUCCESS,
@@ -39,7 +39,7 @@ export const getProductDetails = (id) => async (dispatch) => {
 
         dispatch({
             type: PRODUCT_DETAILS_SUCCESS,
-            payload: data
+            payload: data.product
         })
 
     } catch (error) {

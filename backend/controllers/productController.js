@@ -6,7 +6,7 @@ const { sequelize } = require('../models');
 const Product = db.product;
 const Photo = db.photo;
 const Review = db.review;
-const User = db.user;;
+const User = db.user;
 const Op = db.Sequelize.Op;
 
 exports.create = asyncHandler(async (req, res) => {
@@ -56,7 +56,7 @@ exports.findAll = (req, res) => {
     const condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
 
     Product.findAndCountAll({
-        distinct: true, order: [['created_at', 'desc']], condition, limit, offset,
+        distinct: true, order: [['created_at', 'desc']], where: condition, limit, offset,
         include: { model: Photo, required: true, separate: true },
     })
         .then(data => {
@@ -67,6 +67,7 @@ exports.findAll = (req, res) => {
             res.send({
                 success: true,
                 productsCount,
+                limit,
                 products,
                 totalPages,
                 currentPage
@@ -80,14 +81,10 @@ exports.findAll = (req, res) => {
 
 exports.findOne = asyncHandler(async (req, res) => {
     const product = await Product.findByPk(req.params.id, { include: Photo })
-    return res.json(
+    return res.json({
+        success: true,
         product
-    )
-    ///Product.findByPk(req.params.id, { include: Photo }).then(product => {
-    //    return res.send({
-    //        product
-    //    })
-    //})
+    })
 })
 
 exports.delete = asyncHandler(async (req, res) => {

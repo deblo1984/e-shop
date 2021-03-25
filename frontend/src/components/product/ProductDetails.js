@@ -27,29 +27,34 @@ const ProductDetails = ({ match }) => {
     return (
 
         <Fragment>
+            <MetaData title={product.name} />
             {loading ? <Loader /> : (
                 <Fragment>
-                    <MetaData title={product.name} />
                     <div className="row f-flex justify-content-around">
                         <div className="col-12 col-lg-5 img-fluid" id="product_image">
                             <Carousel pause='hover'>
                                 {product.photos && product.photos.map(photo => (
                                     <Carousel.Item key={photo.id}>
-                                        <img className='d-block w-100' src={photo.url} alt='test' />
+                                        <img className='d-block w-100' src={photo.url} alt={product.title} />
                                     </Carousel.Item>
                                 ))}
                             </Carousel>
                         </div>
                         <div className="col-12 col-lg-5 mt-5">
-                            <h3>onn. 32” Class HD (720P) LED Roku Smart TV (100012589)</h3>
-                            <p id="product_id">Product # sklfjdk35fsdf5090</p>
+                            <h3>{product.name}</h3>
+                            <p id="product_id">Product # {product.id}</p>
 
                             <hr />
 
                             <div className="rating-outer">
-                                <div className="rating-inner"></div>
+                                <div
+                                    className="rating-inner"
+                                    style={{ width: `${(product.rating / 5) * 100}%` }}
+                                >
+
+                                </div>
                             </div>
-                            <span id="no_of_reviews">(5 Reviews)</span>
+                            <span id="no_of_reviews">({product.numOfReviews} Reviews)</span>
 
                             <hr />
 
@@ -65,14 +70,17 @@ const ProductDetails = ({ match }) => {
 
                             <hr />
 
-                            <p>Status: <span id="stock_status">In Stock</span></p>
+                            <p>Status: <span id="stock_status" className={product.stock > 0 ?
+                                'greenColor' : 'redColor'}>
+                                {product.stock > 0 ? 'In stock' : 'Out of stock'}
+                            </span></p>
 
                             <hr />
 
                             <h4 className="mt-2">Description:</h4>
-                            <p>Binge on movies and TV episodes, news, sports, music and more! We insisted on 720p High Definition for this 32" LED TV, bringing out more lifelike color, texture and detail. We also partnered with Roku to bring you the best possible content with thousands of channels to choose from, conveniently presented through your own custom home screen.</p>
+                            <p>{product.description}</p>
                             <hr />
-                            <p id="product_seller mb-3">Sold by: <strong>Amazon</strong></p>
+                            <p id="product_seller mb-3">Sold by: <strong>Isdilad</strong></p>
 
                             <button id="review_btn" type="button" className="btn btn-primary mt-4" data-toggle="modal" data-target="#ratingModal">
                                 Submit Your Review
