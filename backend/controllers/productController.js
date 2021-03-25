@@ -50,6 +50,7 @@ exports.create = asyncHandler(async (req, res) => {
 })
 
 exports.findAll = (req, res) => {
+
     const { page, size, name } = req.query;
     const { limit, offset } = getPagination(page, size);
     const condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
@@ -60,11 +61,12 @@ exports.findAll = (req, res) => {
     })
         .then(data => {
             //const response = getPagingData(products, page, limit);
-            const { count: totalItems, rows: products } = data;
+            const { count: productsCount, rows: products } = data;
             const currentPage = page ? +page : 1;
-            const totalPages = Math.ceil(totalItems / limit);
+            const totalPages = Math.ceil(productsCount / limit);
             res.send({
-                totalItems,
+                success: true,
+                productsCount,
                 products,
                 totalPages,
                 currentPage
@@ -78,10 +80,14 @@ exports.findAll = (req, res) => {
 
 exports.findOne = asyncHandler(async (req, res) => {
     const product = await Product.findByPk(req.params.id, { include: Photo })
-    return res.json({
-        success: true,
+    return res.json(
         product
-    })
+    )
+    ///Product.findByPk(req.params.id, { include: Photo }).then(product => {
+    //    return res.send({
+    //        product
+    //    })
+    //})
 })
 
 exports.delete = asyncHandler(async (req, res) => {
