@@ -2,6 +2,8 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
+const bodyParser = require('body-parser');
+const cloudinary = require('cloudinary');
 const { notFound, errorHandler } = require('./middlewares/error')
 const tutorial = require('./routes/tutorial.routes');
 const category = require('./routes/category.routes');
@@ -31,11 +33,6 @@ function initial() {
     Role.create({
         name: "user"
     });
-
-    Role.create({
-        name: "moderator"
-    });
-
     Role.create({
         name: "admin"
     });
@@ -43,6 +40,14 @@ function initial() {
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }))
+
+//setting up cloudinary configuration
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+})
 
 app.use('/api/', tutorial);
 app.use('/api/', category);

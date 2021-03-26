@@ -29,6 +29,7 @@ db.category = require('./category')(sequelize, Sequelize);
 db.review = require('./review')(sequelize, Sequelize);
 db.order = require('./order')(sequelize, Sequelize);
 db.orderItems = require('./orderItems')(sequelize, Sequelize);
+db.userAvatar = require('./userAvatar')(sequelize, Sequelize);
 
 //define user has many products
 db.user.hasMany(db.product);
@@ -53,6 +54,10 @@ db.orderItems.belongsTo(db.order, { foreignKey: 'orderId' });
 
 db.product.hasMany(db.orderItems);
 db.orderItems.belongsTo(db.product, { foreignKey: 'productId' });
+
+//define user has one avatar
+db.user.hasOne(db.userAvatar)
+db.userAvatar.belongsTo(db.user);
 
 db.role.belongsToMany(db.user, {
     through: 'user_roles',
