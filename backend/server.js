@@ -3,8 +3,11 @@ const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const fileUpload = require('express-fileupload');
 const cloudinary = require('cloudinary');
+
 const { notFound, errorHandler } = require('./middlewares/error')
+
 const tutorial = require('./routes/tutorial.routes');
 const category = require('./routes/category.routes');
 const product = require('./routes/product.routes');
@@ -40,7 +43,8 @@ function initial() {
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(fileUpload());
 
 //setting up cloudinary configuration
 cloudinary.config({

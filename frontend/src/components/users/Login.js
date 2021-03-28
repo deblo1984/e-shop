@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 import Loader from '../layout/Loader'
 import MetaData from '../layout//MetaData'
+import Message from '../layout/Message'
 
 import { useAlert } from 'react-alert'
 import { useDispatch, useSelector } from 'react-redux'
@@ -40,7 +41,7 @@ const Login = ({ history }) => {
             {loading ? <Loader /> : (
                 <Fragment>
                     <MetaData title={'login'} />
-
+                    {error && <Message variant='danger'>{error}</Message>}
                     <div className="row wrapper">
                         <div className="col-10 col-lg-5">
                             <form className="shadow-lg" onSubmit={submitHandler}>

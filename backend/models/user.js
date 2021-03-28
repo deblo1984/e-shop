@@ -9,6 +9,8 @@ module.exports = (sequelize, Sequelize) => {
         email: { type: Sequelize.STRING, allowNull: false, unique: true },
         password: { type: Sequelize.STRING, allowNull: false },
         avatar: { type: Sequelize.STRING },
+        resetPasswordToken: { type: Sequelize.STRING },
+        resetPasswordExpires: { type: Sequelize.STRING }
     }, { underscored: true })
     return User
 };

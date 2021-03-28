@@ -32,27 +32,36 @@ export const login = (email, password) => async (dispatch) => {
     } catch (error) {
         dispatch({
             type: LOGIN_FAIL,
-            payload: error.response.data.messsage
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message,
+
         })
     }
 }
 
-export const register = (name, email, password) => async (dispatch) => {
+export const register = (userData) => async (dispatch) => {
     try {
         dispatch({ type: USER_REGISTER_REQUEST })
         const config = {
-            'Contonet-Type': 'application/json'
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
         }
-        const { data } = await axios.post('/api/register', { name, email, password }, config)
+        const { data } = await axios.post('/api/register', userData, config)
+        console.log(data);
         dispatch({
             type: USER_REGISTER_SUCCESS,
-            payload: data.user
+            payload: data
         })
 
     } catch (error) {
         dispatch({
             type: USER_REGISTER_FAIL,
-            payload: error.response.messsage.data
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message,
+
         })
 
     }
@@ -96,6 +105,6 @@ export const logout = () => async (dispatch) => {
 
 export const clearErrors = () => async (dispatch) => {
     dispatch({
-        type: LOAD_USER_FAIL,
+        type: CLEAR_ERRORS,
     })
 }
