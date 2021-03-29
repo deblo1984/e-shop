@@ -51,11 +51,20 @@ const Header = () => {
                                 aria-expanded="false">
 
                                 <figure className="avatar avatar-nav">
-                                    <img
-                                        src={user.avatar && user.avatar.url}
-                                        alt={user && user.name}
-                                        className="rounded-circle"
-                                    />
+                                    {user.avatar && user.avatar.url !== '' ? (
+                                        <img
+                                            src={user.avatar.url}
+                                            alt={user && user.name}
+                                            className="rounded-circle"
+                                        />
+                                    ) : (
+                                        <img
+                                            src='images/default_avatar.jpg'
+                                            alt='profile images'
+                                            className="rounded-circle"
+                                        />
+                                    )}
+
                                 </figure>
                                 <span>{user && user.name}</span>
                             </Link>

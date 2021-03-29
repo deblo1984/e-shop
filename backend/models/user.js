@@ -10,7 +10,7 @@ module.exports = (sequelize, Sequelize) => {
         password: { type: Sequelize.STRING, allowNull: false },
         avatar: { type: Sequelize.STRING },
         resetPasswordToken: { type: Sequelize.STRING },
-        resetPasswordExpires: { type: Sequelize.STRING }
+        resetPasswordExpires: { type: Sequelize.DATE }
     }, { underscored: true })
     return User
 };
