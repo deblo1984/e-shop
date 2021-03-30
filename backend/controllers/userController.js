@@ -77,7 +77,6 @@ exports.create = asyncHandler(async (req, res) => {
 
     } catch (error) {
         t.rollback();
-        console.log(error);
         return res.status(500).send({
             message: 'shit happen',
         })
@@ -85,18 +84,15 @@ exports.create = asyncHandler(async (req, res) => {
 
 })
 
-/*exports.update = (req, res) => {
-    const newUserData = {
-        name: req.body.name,
-        email: req.body.email
-    }
+exports.update = asyncHandler(async (req, res) => {
+    const t = await sequelize.transaction();
     try {
-        const user = await User.update({
-            name: req.body.name,
-            email: req.body.email,
-            password: bcrypt.hashSync(req.body.password, 8)
-        }, { transaction: t });
-
+        const user = await User.findByPk(req.user.id, { transaction: t });
+        const hasil = await user.removeRoles(user.id, { transaction: t });
+        console.log(hasil);
+        await user.update(req.body,
+            { where: { id: req.user.id } },
+            { transaction: t })
         if (req.body.roles) {
             roles = await Role.findAll({
                 where: {
@@ -113,71 +109,20 @@ exports.create = asyncHandler(async (req, res) => {
             await user.setRoles(roles, { transaction: t })
         }
 
-        var authorities = [];
+        await t.commit();
 
-        for (let i = 0; i < roles.length; i++) {
-            authorities.push(roles[i].name)
-        }
-
-        if (req.body.avatar !== '') {
-            // for cloudinary upload purpose
-            const result = await cloudinary.v2.uploader.upload(req.body.avatar, {
-                folder: 'avatar',
-                width: 150,
-                crop: 'scale'
-            })
-
-            avatar = await UserAvatar.create({
-                userId: user.id,
-                publicId: result.public_id,
-                url: result.secure_url
-            }, { transaction: t })
-        }
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send({
-            message: 'shit happen'
+        return res.status(201).send({
+            success: true,
+            message: 'user has been updated'
         })
-    }
-
-}
-*/
-
-exports.update = asyncHandler(async (req, res) => {
-    const t = await sequelize.transaction();
-    try {
-
     } catch (error) {
         t.rollback();
-        console.log(error);
         return res.send({
             success: false,
             message: 'shit happens'
         })
 
     }
-    const user = await User.findByPk(req.user.id, { transaction: t });
-    await user.removeRoles({ transaction: t });
-    await user.update(req.body, { where: { id: req.user.id } })
-    if (req.body.roles) {
-        roles = await Role.findAll({
-            where: {
-                name: { [Op.or]: req.body.roles }
-            }
-        })
-        await user.setRoles(updatedRoles)
-    } else {
-        roles = await Role.findAll({
-            where: {
-                name: { [Op.or]: ['user'] }
-            }
-        })
-        await user.setRoles(roles)
-    }
-    return res.status(201).send({
-        success: true,
-        message: 'user has been updated'
-    })
 })
 
 exports.login = (req, res) => {
@@ -224,7 +169,7 @@ exports.login = (req, res) => {
 
 exports.getUserProfile = asyncHandler(async (req, res) => {
     const user = await User.findByPk(req.user.id, {
-        attributes: ['id', 'name', 'email'],
+        attributes: ['id', 'name', 'email', 'createdAt'],
         include: [
             { model: UserAvatar, attributes: ['publicId', 'url'] }
         ]
@@ -239,6 +184,7 @@ exports.getUserProfile = asyncHandler(async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        createdAt: user.createdAt,
         avatar: user.userAvatar,
         roles: authorities
     })
@@ -268,9 +214,10 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
         resetPasswordExpires
     }, { where: { email: req.body.email } })
 
-    const resetUrl = `${req.protocol}://${req.get('host')}/api/password/reset/${resetToken}`;
+    //const resetUrl = `${req.protocol}://${req.get('host')}/api/password/reset/${resetToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL}/password/reset/${resetToken}`;
     const message = `mangga ieu password reset na :\n\n${resetUrl}\n\n
-        tong rea lila klik wae lah`;
+        tong rea lila, klik wae lah`;
 
     try {
         await sendEmail({
@@ -290,7 +237,10 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
             resetPasswordToken: null,
             resetPasswordExpires: null
         }, { where: { email: req.body.email } })
-        return res.status(500).send({ message: 'shit happens' })
+        return res.status(500).send({
+            success: false,
+            message: 'shit happens'
+        })
 
     }
 })
@@ -319,6 +269,7 @@ exports.resetPassword = asyncHandler(async (req, res) => {
 
     if (!req.body.password && !req.body.confirmPassword) {
         return res.send({
+            success: false,
             message: 'password cannot be blank'
         })
     }
@@ -344,18 +295,53 @@ exports.resetPassword = asyncHandler(async (req, res) => {
             }
         })
 
-        res.status(201).send({
+        return res.status(201).json({
             success: true,
             message: 'Password has been change'
         })
 
     } catch (error) {
         console.log(error);
-        res.send({
+        return res.send({
             success: false,
             message: 'cannot change password at the moment'
         })
     }
 
+})
+
+exports.updatePassword = asyncHandler(async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+        const user = await User.findByPk(req.user.id, { attributes: ['email', 'password'] },
+            { transaction: t })
+        ////console.log(user);
+        const isMatched = await bcrypt.compare(req.body.oldPassword, user.password);
+        console.log(isMatched);
+        if (!isMatched) {
+            return res.status(404).send({
+                success: false,
+                message: 'Old password not match'
+            })
+        }
+        await User.update({
+            password: bcrypt.hashSync(req.body.password, 8)
+        }, { where: { id: req.user.id } },
+            { transaction: t })
+
+        t.commit();
+
+        return res.status(201).send({
+            success: true,
+            message: 'Password has been changed'
+        })
+    } catch (error) {
+        t.rollback();
+        console.log(error);
+        res.send({
+            success: false,
+            message: 'failed update the password'
+        })
+    }
 })
 

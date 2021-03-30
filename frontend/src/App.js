@@ -1,16 +1,23 @@
-import './App.css';
+import './App.css'
 import { useEffect } from 'react'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 
-import Footer from './components/layout/Footer';
+import Footer from './components/layout/Footer'
 import Header from './components/layout/Header'
-import Home from './components/layout/Home';
-import Login from './components/users/Login';
-import Register from './components/users/Register';
-import ProductDetails from './components/product/ProductDetails';
+import Home from './components/layout/Home'
+import Login from './components/users/Login'
+import Register from './components/users/Register'
+import ProductDetails from './components/product/ProductDetails'
+import Profile from './components/users/Profile'
+import UpdateProfile from './components/users/UpdateProfile'
+import ForgotPassword from './components/users/ForgotPassword'
+
+import ProtectedRoute from './components/route/ProtectedRoute'
 
 import { loadUser } from './actions/userAction'
 import store from './store'
+import UpdatePassword from './components/users/UpdatePassword'
+import ResetPassword from './components/users/ResetPassword'
 
 function App() {
 
@@ -28,6 +35,11 @@ function App() {
           <Route path='/product/:id' component={ProductDetails} exact />
           <Route path='/login' component={Login} />
           <Route path='/register' component={Register} />
+          <Route path='/password/forgot' component={ForgotPassword} exact />
+          <Route path='/password/reset/:token' component={ResetPassword} exact />
+          <ProtectedRoute path='/profile' component={Profile} exact />
+          <ProtectedRoute path='/profile/update' component={UpdateProfile} exact />
+          <ProtectedRoute path='/password/update' component={UpdatePassword} exact />
         </div>
         <Footer />
       </div>
