@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { Carousel } from 'react-bootstrap'
 
 import Loader from '../layout/Loader'
@@ -10,6 +10,8 @@ import { clearErrors, getProductDetails } from '../../actions/productAction'
 
 
 const ProductDetails = ({ match }) => {
+
+    const [quantity, setquantity] = useState(1);
 
     const dispatch = useDispatch();
     const alert = useAlert();
@@ -23,6 +25,22 @@ const ProductDetails = ({ match }) => {
             dispatch(clearErrors())
         }
     }, [dispatch, alert, error, match.params.id])
+
+    const increaseQty = () => {
+        const count = document.querySelector(".count")
+        if (count.valueAsNumber >= product.stock) return;
+
+        const qty = count.valueAsNumber + 1;
+        setquantity(qty);
+    }
+
+    const decreaseQty = () => {
+        const count = document.querySelector(".count");
+        if (count.valueAsNumber <= 1) return;
+
+        const qty = count.valueAsNumber - 1
+        setquantity(qty);
+    }
 
     return (
 
@@ -58,13 +76,13 @@ const ProductDetails = ({ match }) => {
 
                             <hr />
 
-                            <p id="product_price">$108.00</p>
+                            <p id="product_price">${product.price}</p>
                             <div className="stockCounter d-inline">
-                                <span className="btn btn-danger minus">-</span>
+                                <span className="btn btn-danger minus" onClick={decreaseQty}>-</span>
 
-                                <input type="number" className="form-control count d-inline" value="1" readOnly />
+                                <input type="number" className="form-control count d-inline" value={quantity} readOnly />
 
-                                <span className="btn btn-primary plus">+</span>
+                                <span className="btn btn-primary plus" onClick={increaseQty}>+</span>
                             </div>
                             <button type="button" id="cart_btn" className="btn btn-primary d-inline ml-4">Add to Cart</button>
 
@@ -84,7 +102,7 @@ const ProductDetails = ({ match }) => {
 
                             <button id="review_btn" type="button" className="btn btn-primary mt-4" data-toggle="modal" data-target="#ratingModal">
                                 Submit Your Review
-                </button>
+                            </button>
 
                             <div className="row mt-2 mb-5">
                                 <div className="rating w-50">

@@ -13,7 +13,7 @@ const ResetPassword = ({ history, match }) => {
     const alert = useAlert();
     const dispatch = useDispatch();
 
-    const { error, loading, message } = useSelector(state => state.forgotPassword);
+    const { error, message } = useSelector(state => state.forgotPassword);
 
     useEffect(() => {
         if (error) {

@@ -92,7 +92,7 @@ export const updateProfile = (userData) => async (dispatch) => {
                 'Content-Type': 'multipart/form-data'
             }
         }
-        const { data } = await axios.put('/api/profile/update', userData, config)
+        const { data } = await axios.post('/api/profile/update', userData, config)
         console.log(data);
         dispatch({
             type: UPDATE_PROFILE_SUCCESS,

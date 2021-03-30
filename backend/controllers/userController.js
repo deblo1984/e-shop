@@ -21,8 +21,8 @@ exports.create = asyncHandler(async (req, res) => {
             email: req.body.email,
             password: bcrypt.hashSync(req.body.password, 8)
         }, { transaction: t });
-
-        if (req.body.avatar !== '') {
+        //console.log(user)
+        if (req.body.avatar && req.body.avatar !== '') {
             // for cloudinary upload purpose
             const result = await cloudinary.v2.uploader.upload(req.body.avatar, {
                 folder: 'avatar',
@@ -85,38 +85,58 @@ exports.create = asyncHandler(async (req, res) => {
 })
 
 exports.update = asyncHandler(async (req, res) => {
-    const t = await sequelize.transaction();
     try {
-        const user = await User.findByPk(req.user.id, { transaction: t });
-        const hasil = await user.removeRoles(user.id, { transaction: t });
-        console.log(hasil);
+        const user = await User.findByPk(req.user.id, { include: [UserAvatar] });
+        await user.removeRoles(user.id);
+        const imageId = user.userAvatar.publicId;
+
+        if (req.body.avatar && req.body.avatar !== '') {
+
+            // destory user avatar in cloudinary
+            await cloudinary.v2.uploader.destroy(imageId);
+            //delete avatar record from database
+            await UserAvatar.destroy({
+                where: { userId: user.id }
+            })
+
+            const result = await cloudinary.v2.uploader.upload(req.body.avatar, {
+                folder: 'avatar',
+                width: 150,
+                crop: 'scale'
+            })
+
+            await UserAvatar.create({
+                userId: user.id,
+                publicId: result.public_id,
+                url: result.secure_url
+            })
+        }
+
         await user.update(req.body,
-            { where: { id: req.user.id } },
-            { transaction: t })
+            { where: { id: req.user.id } })
+
         if (req.body.roles) {
             roles = await Role.findAll({
                 where: {
                     name: { [Op.or]: req.body.roles }
                 }
-            }, { transaction: t })
-            await user.setRoles(roles, { transaction: t })
+            })
+            await user.setRoles(roles)
         } else {
             roles = await Role.findAll({
                 where: {
                     name: { [Op.or]: ['user'] }
                 }
             }, { transaction: t })
-            await user.setRoles(roles, { transaction: t })
+            await user.setRoles(roles,)
         }
 
-        await t.commit();
 
         return res.status(201).send({
             success: true,
             message: 'user has been updated'
         })
     } catch (error) {
-        t.rollback();
         return res.send({
             success: false,
             message: 'shit happens'
