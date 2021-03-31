@@ -46,10 +46,10 @@ const Cart = ({ history }) => {
                         <div className='row d-flex justify-content-beetween'>
                             <div className='col-12 col-lg-8'>
                                 {cartItems && cartItems.map(item => (
-                                    <Fragment>
+                                    <Fragment key={item.product}>
                                         <hr />
 
-                                        <div className='cart-item' key={item.product}>
+                                        <div className='cart-item'>
                                             <div className='row'>
                                                 <div className='col-4 col-lg-3'>
                                                     <img

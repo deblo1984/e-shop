@@ -62,7 +62,7 @@ const Header = () => {
                                         />
                                     ) : (
                                         <img
-                                            src='images/default_avatar.jpg'
+                                            src='/images/default_avatar.jpg'
                                             alt='profile images'
                                             className="rounded-circle"
                                         />

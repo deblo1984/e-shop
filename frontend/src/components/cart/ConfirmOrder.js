@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 
 import MetaData from '../layout/MetaData'
@@ -49,9 +49,9 @@ const ConfirmOrder = ({ history }) => {
                     <h4 className="mt-4">Your Cart Items:</h4>
 
                     {cartItems.map(item => (
-                        <Fragment>
+                        <Fragment key={item.product}>
                             <hr />
-                            <div className="cart-item my-1" key={item.product}>
+                            <div className="cart-item my-1">
                                 <div className="row">
                                     <div className="col-4 col-lg-2">
                                         <img src={item.image} alt="Laptop" height="45" width="65" />
