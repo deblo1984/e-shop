@@ -15,6 +15,7 @@ const user = require('./routes/user.routes');
 const review = require('./routes/review.routes');
 const photo = require('./routes/photo.routes');
 const order = require('./routes/order.routes');
+const stripePayment = require('./routes/payment.routes');
 const db = require('./models')
 
 dotenv.config();
@@ -60,6 +61,7 @@ app.use('/api/', user);
 app.use('/api/', review);
 app.use('/api/', photo);
 app.use('/api/', order);
+app.use('/api/', stripePayment)
 
 app.use(notFound);
 app.use(errorHandler);

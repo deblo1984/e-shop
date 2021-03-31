@@ -37,6 +37,7 @@
     "save": "^2.4.0",
     "sequelize": "^6.5.1",
     "sequelize-cli": "^6.2.0",
+    "stripe": "^8.140.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

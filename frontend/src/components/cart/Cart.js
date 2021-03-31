@@ -15,10 +15,6 @@ const Cart = ({ history }) => {
         dispatch(removeItemCart(id))
     }
 
-    const checkoutHandler = () => {
-        console.log();
-    }
-
     const increaseQty = (id, quantity, stock) => {
         const newQty = quantity + 1;
         if (newQty > stock) return;
@@ -31,6 +27,10 @@ const Cart = ({ history }) => {
 
         if (newQty <= 0) return;
         dispatch(addItemsToCart(id, newQty))
+    }
+
+    const checkoutHandler = () => {
+        history.push('/login??redirect=shipping')
     }
 
     return (
@@ -92,7 +92,13 @@ const Cart = ({ history }) => {
                                     <p>Est. total: <span className="order-summary-values">${cartItems.reduce((acc, item) => acc + item.quantity * item.price, 0).toFixed(2)}</span></p>
 
                                     <hr />
-                                    <button id="checkout_btn" className="btn btn-primary btn-block" onClick={checkoutHandler}>Check out</button>
+                                    <button
+                                        id="checkout_btn"
+                                        className="btn btn-primary btn-block"
+                                        onClick={checkoutHandler}
+                                    >
+                                        Check out
+                                    </button>
                                 </div>
                             </div>
                         </div>
