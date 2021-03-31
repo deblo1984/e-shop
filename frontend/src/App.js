@@ -18,6 +18,7 @@ import { loadUser } from './actions/userAction'
 import store from './store'
 import UpdatePassword from './components/users/UpdatePassword'
 import ResetPassword from './components/users/ResetPassword'
+import Cart from './components/cart/Cart'
 
 function App() {
 
@@ -40,6 +41,7 @@ function App() {
           <ProtectedRoute path='/profile' component={Profile} exact />
           <ProtectedRoute path='/profile/update' component={UpdateProfile} exact />
           <ProtectedRoute path='/password/update' component={UpdatePassword} exact />
+          <ProtectedRoute path='/cart' component={Cart} exact />
         </div>
         <Footer />
       </div>
