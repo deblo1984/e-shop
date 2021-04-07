@@ -23,6 +23,9 @@ import Cart from './components/cart/Cart'
 import Shipping from './components/cart/Shipping'
 import ConfirmOrder from './components/cart/ConfirmOrder'
 import StripePayment from './components/cart/StripePayment'
+import OrderSuccess from './components/cart/OrderSuccess'
+
+import OrderList from './components/order/OrderList'
 
 //payments import
 import { Elements } from '@stripe/react-stripe-js'
@@ -40,7 +43,7 @@ function App() {
 
     async function getStripeApiKey() {
       const { data } = await axios.get('/api/stripeapi');
-
+      console.log(data.stripeApiKey);
       setStripeApiKey(data.stripeApiKey)
     }
 
@@ -58,12 +61,14 @@ function App() {
           <ProtectedRoute path='/cart' component={Cart} exact />
           <ProtectedRoute path='/shipping' component={Shipping} exact />
           <ProtectedRoute path='/order/confirm' component={ConfirmOrder} exact />
-
+          <ProtectedRoute path='/order/success' component={OrderSuccess} exact />
           {stripeApiKey &&
             <Elements stripe={loadStripe(stripeApiKey)}>
               <ProtectedRoute path="/order/payment" component={StripePayment} />
             </Elements>
           }
+
+          <ProtectedRoute path='/orders' component={OrderList} exact />
 
           <Route path='/search/:keyword' component={Home} />
           <Route path='/product/:id' component={ProductDetails} exact />

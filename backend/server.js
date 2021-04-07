@@ -2,9 +2,9 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
-const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
 const cloudinary = require('cloudinary');
+const path = require('path');
 
 const { notFound, errorHandler } = require('./middlewares/error')
 
@@ -18,13 +18,14 @@ const order = require('./routes/order.routes');
 const stripePayment = require('./routes/payment.routes');
 const db = require('./models')
 
-dotenv.config();
-
 const app = express();
+
+dotenv.config();
 
 if (process.env.NODE_ENV === 'DEVELOPMENT') {
     app.use(morgan('dev'))
 }
+
 
 const Role = db.role;
 
@@ -44,7 +45,7 @@ function initial() {
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload());
 
 //setting up cloudinary configuration

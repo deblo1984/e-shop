@@ -21,25 +21,36 @@ exports.create = asyncHandler(async (req, res) => {
     const id = uuidv4();
     const t = await sequelize.transaction();
     const {
-        address,
-        phone,
-        postalCode,
-        province,
-        country,
         itemsPrice,
         taxPrice,
         shippingPrice,
-        orderStatus
+        paidStatus,
+        paidAt,
     } = req.body;
 
     const userId = req.user.id;
-    const totalPrice = itemsPrice + taxPrice + shippingPrice;
+
+    const shippingInfo = req.body.shippingInfo;
+    const address = shippingInfo.address;
+    const phone = shippingInfo.phoneNo;
+    const postalCode = shippingInfo.postalCode;
+    const province = 'JABAR';
+    const country = shippingInfo.country;
+    const orderStatus = 'Pending';
+
+    const paymentInfo = req.body.paymentInfo;
+    const paymentId = paymentInfo.id;
+    const paymentStatus = paymentInfo.status;
+    var totalPrice = Number(itemsPrice) + Number(taxPrice) + Number(shippingPrice);
     const orderItems = req.body.orderItems;
 
     try {
         const order = await Order.create({
-            id, address, phone, postalCode, province, country, itemsPrice,
-            taxPrice, shippingPrice, totalPrice, orderStatus, userId
+            id,
+            address, phone, postalCode, province, country,
+            paymentId, paymentStatus, paidStatus, paidAt,
+            itemsPrice, taxPrice, shippingPrice, totalPrice,
+            orderStatus, userId
         }, { transaction: t });
 
         for (let i = 0; i < orderItems.length; i++) {
@@ -48,7 +59,7 @@ exports.create = asyncHandler(async (req, res) => {
                 quantity: orderItems[i].quantity,
                 price: orderItems[i].price,
                 total: orderItems[i].price * orderItems[i].quantity,
-                productId: orderItems[i].productId,
+                productId: orderItems[i].product,
             }, { transaction: t })
         }
         await t.commit();
@@ -76,8 +87,10 @@ exports.findAllByUserId = (req, res) => {
         distinct: true, order: [['created_at', 'desc']], limit, offset,
         where: { userId: req.user.id },
         include: [{
-            model: User, attributes: ['id', 'name']
-        }]
+            model: OrderItems, required: true, separate: true,
+            attributes: { exclude: ['createdAt', 'updatedAt', 'orderId'] },
+            include: [{ model: Product, attributes: ['name', 'id'] }]
+        }, { model: User, attributes: ['id', 'name'] }]
     }).then(data => {
         const { count: totalItems, rows: orders } = data;
         const currentPage = page ? +page : 1;

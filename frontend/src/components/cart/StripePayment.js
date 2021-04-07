@@ -10,8 +10,9 @@ import {
     CardExpiryElement,
     CardCvcElement
 } from '@stripe/react-stripe-js'
-
 import axios from 'axios'
+import { createOrder, clearErrors } from '../../actions/orderAction'
+import { CLEAR_CART } from '../../constants/cartConstant'
 
 const options = {
     style: {
@@ -24,10 +25,6 @@ const options = {
     }
 }
 
-const submitHandler = (e) => {
-    console.log('okay')
-}
-
 const StripePayment = ({ history }) => {
 
     const alert = useAlert();
@@ -36,11 +33,95 @@ const StripePayment = ({ history }) => {
     const dispatch = useDispatch();
 
     const { user } = useSelector(state => state.auth);
-    const { cartItems, shippinginfo } = useSelector(state => state.cart);
+    const { cartItems, shippingInfo } = useSelector(state => state.cart);
+    const { error } = useSelector(state => state.newOrder)
 
     useEffect(() => {
+        if (error) {
+            alert.error(error)
+            dispatch(clearErrors())
+        }
 
-    }, [])
+    }, [dispatch, alert, error])
+
+    const order = {
+        orderItems: cartItems,
+        shippingInfo: shippingInfo
+    }
+
+    const orderInfo = JSON.parse(sessionStorage.getItem('orderInfo'));
+    if (orderInfo) {
+        order.itemsPrice = orderInfo.itemsPrice
+        order.shippingPrice = orderInfo.shippingPrice
+        order.taxPrice = orderInfo.taxPrice
+        order.totalPrice = orderInfo.totalPrice
+        order.paidStatus = true
+        order.paidAt = Date.now()
+    }
+
+    const paymentData = {
+        amount: Math.round(orderInfo.totalPrice * 100)
+    }
+
+    const submitHandler = async (e) => {
+        e.preventDefault();
+
+        document.querySelector('#pay_btn').disabled = true;
+        let res;
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+
+            res = await axios.post('/api/payment/process', paymentData, config)
+            const clientsecret = res.data.client_secret;
+
+            if (!stripe || !elements) {
+                return;
+            }
+
+            const result = await stripe.confirmCardPayment(clientsecret, {
+                payment_method: {
+                    card: elements.getElement(CardNumberElement),
+                    billing_details: {
+                        name: user.name,
+                        email: user.email
+                    }
+                }
+            })
+
+            if (result.error) {
+                alert.error(result.error.message);
+            } else {
+                if (result.paymentIntent.status === 'succeeded') {
+                    order.paymentInfo = {
+                        id: result.paymentIntent.id,
+                        status: result.paymentIntent.status
+                    }
+
+                    dispatch(createOrder(order))
+                    dispatch({
+                        type: CLEAR_CART
+                    })
+
+                    localStorage.removeItem('cartItems');
+                    sessionStorage.removeItem('orderInfo');
+                    localStorage.removeItem('shippingInfo');
+
+                    ///console.log(order)
+                    history.push('/order/success')
+                } else {
+                    alert.error('there error while processing the payment')
+                }
+            }
+
+        } catch (error) {
+            document.querySelector('#pay_btn').disabled = false;
+            alert.error(error.response.data.message)
+        }
+    }
 
     return (
         <Fragment>
@@ -87,7 +168,7 @@ const StripePayment = ({ history }) => {
                             type="submit"
                             className="btn btn-block py-3"
                         >
-                            Pay
+                            Pay {` - ${orderInfo && orderInfo.totalPrice}`}
                         </button>
 
                     </form>
