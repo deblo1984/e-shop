@@ -3,6 +3,9 @@ import {
     CREATE_ORDER_FAIL,
     CREATE_ORDER_REQUEST,
     CREATE_ORDER_SUCCESS,
+    USER_ORDER_DETAIL_FAIL,
+    USER_ORDER_DETAIL_REQUEST,
+    USER_ORDER_DETAIL_SUCCESS,
     USER_ORDER_FAIL,
     USER_ORDER_REQUEST,
     USER_ORDER_SUCCESS
@@ -49,6 +52,33 @@ export const userOrdersReducer = (state = { orders: [] }, action) => {
                 orders: action.payload
             }
         case USER_ORDER_FAIL:
+            return {
+                loading: false,
+                error: action.payload
+            }
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null
+            }
+        default:
+            return state;
+    }
+}
+
+export const userOrderDetailsReducer = (state = { order: {} }, action) => {
+    switch (action.type) {
+
+        case USER_ORDER_DETAIL_REQUEST:
+            return {
+                loading: true
+            }
+        case USER_ORDER_DETAIL_SUCCESS:
+            return {
+                loading: false,
+                order: action.payload
+            }
+        case USER_ORDER_DETAIL_FAIL:
             return {
                 loading: false,
                 error: action.payload

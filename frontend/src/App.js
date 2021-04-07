@@ -26,6 +26,7 @@ import StripePayment from './components/cart/StripePayment'
 import OrderSuccess from './components/cart/OrderSuccess'
 
 import OrderList from './components/order/OrderList'
+import OrderDetails from './components/order/OrderDetails'
 
 //payments import
 import { Elements } from '@stripe/react-stripe-js'
@@ -68,6 +69,7 @@ function App() {
           }
 
           <ProtectedRoute path='/orders' component={OrderList} exact />
+          <ProtectedRoute path='/orders/:id' component={OrderDetails} exact />
 
           <Route path='/search/:keyword' component={Home} />
           <Route path='/product/:id' component={ProductDetails} exact />

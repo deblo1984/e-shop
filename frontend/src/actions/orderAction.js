@@ -5,6 +5,9 @@ import {
     CREATE_ORDER_FAIL,
     CREATE_ORDER_REQUEST,
     CREATE_ORDER_SUCCESS,
+    USER_ORDER_DETAIL_FAIL,
+    USER_ORDER_DETAIL_REQUEST,
+    USER_ORDER_DETAIL_SUCCESS,
     USER_ORDER_FAIL,
     USER_ORDER_REQUEST,
     USER_ORDER_SUCCESS
@@ -50,6 +53,23 @@ export const userOrders = () => async (dispatch) => {
     } catch (error) {
         dispatch({
             type: USER_ORDER_FAIL,
+            payload: error.response.data.message
+        })
+    }
+}
+
+export const getUserOrderDetails = (id) => async (dispatch) => {
+    try {
+        dispatch({ type: USER_ORDER_DETAIL_REQUEST })
+        const { data } = await axios.get(`/api/orders/${id}`);
+        console.log(data);
+        dispatch({
+            type: USER_ORDER_DETAIL_SUCCESS,
+            payload: data.order
+        })
+    } catch (error) {
+        dispatch({
+            type: USER_ORDER_DETAIL_FAIL,
             payload: error.response.data.message
         })
     }

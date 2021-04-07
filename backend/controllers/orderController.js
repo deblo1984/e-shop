@@ -9,6 +9,7 @@ const Order = db.order;
 const OrderItems = db.orderItems;
 const Product = db.product;
 const User = db.user;
+const Photo = db.photo;
 const Op = db.Sequelize.Op;
 
 //@user function
@@ -115,12 +116,12 @@ exports.getUserOrderDetails = (req, res) => {
             include: [{
                 model: OrderItems, required: true, separate: true,
                 attributes: { exclude: ['createdAt', 'updatedAt', 'orderId'] },
-                include: [{ model: Product, attributes: ['name', 'id'] }]
+                include: [{ model: Product, attributes: ['name', 'id'], include: { model: Photo } }]
             }]
-        }).then(data => {
+        }).then(order => {
             res.send({
                 success: true,
-                data
+                order
             })
         }).catch(err => {
             console.log(err.message);
