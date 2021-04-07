@@ -76,7 +76,7 @@ const UpdateProfile = ({ history }) => {
                         <h1 className='mt-2 mb-5'>Update Profile</h1>
 
                         <div className='form-group'>
-                            <label for='email_field'>Name</label>
+                            <label htmlFor='email_field'>Name</label>
                             <input
                                 type='name'
                                 id='name_field'
@@ -88,7 +88,7 @@ const UpdateProfile = ({ history }) => {
                         </div>
 
                         <div className='form-group'>
-                            <label for='email_field'>Email</label>
+                            <label htmlFor='email_field'>Email</label>
                             <input
                                 type='email'
                                 id='email_field'
@@ -100,7 +100,7 @@ const UpdateProfile = ({ history }) => {
                         </div>
 
                         <div className='form-group'>
-                            <label for='avatar_upload'>Avatar</label>
+                            <label htmlFor='avatar_upload'>Avatar</label>
                             <div className='d-flex align-items-center'>
                                 <div>
                                     <figure className='avatar mr-3 item-rtl'>
