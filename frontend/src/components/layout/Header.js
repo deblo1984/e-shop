@@ -8,13 +8,16 @@ import { logout } from '../../actions/userAction'
 
 import Search from './Search'
 import { Route } from 'react-router-dom'
+import { hasRole } from '../route/Auth'
 
 const Header = () => {
-
+    const { loading, user } = useSelector(state => state.auth)
     const alert = useAlert();
     const dispatch = useDispatch();
 
-    const { user, loading } = useSelector(state => state.auth)
+    //console.log(user);
+    //const allow = hasRole(user, ['admin'])
+    ///console.log(hasRole(user, ['admin']));
     const { cartItems } = useSelector(state => state.cart)
 
     const logoutHandler = () => {
@@ -72,15 +75,12 @@ const Header = () => {
                                 <span>{user && user.name}</span>
                             </Link>
                             <div className='dropdown-menu' aria-labelledby='dropdownMenuButton'>
-                                {user && user.role !== 'admin' ? (
-                                    <Link className='dropdown-item' to='/orders'>Orders</Link>
-                                ) : (
-                                    <Link className='dropdown-item' to='/dashboard'>Dashboard</Link>
+                                {hasRole(user, ['admin']) && (
+                                    <Link className="dropdown-item" to="/dashboard">Dashboard</Link>
                                 )}
-                                <Link className='dropdown-item' to='/profile'>
-                                    Profile
-                                </Link>
-                                <Link className='dropdown-item text-danger' to='/' onClick={logoutHandler}>
+                                <Link className="dropdown-item" to="/orders">Orders</Link>
+                                <Link className="dropdown-item" to="/profile">Profile</Link>
+                                <Link className="dropdown-item text-danger" to="/" onClick={logoutHandler}>
                                     Logout
                                 </Link>
                             </div>
