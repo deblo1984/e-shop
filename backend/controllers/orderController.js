@@ -113,7 +113,7 @@ exports.findAllByUserId = (req, res) => {
 exports.getUserOrderDetails = (req, res) => {
     Order.findByPk(req.params.id,
         {
-            include: [{
+            include: [{ model: User, attributes: ['id', 'name'] }, {
                 model: OrderItems, required: true, separate: true,
                 attributes: { exclude: ['createdAt', 'updatedAt', 'orderId'] },
                 include: [{ model: Product, attributes: ['name', 'id'], include: { model: Photo } }]

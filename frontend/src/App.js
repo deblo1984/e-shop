@@ -77,7 +77,7 @@ function App() {
           <Route path='/register' component={Register} />
           <Route path='/password/forgot' component={ForgotPassword} exact />
           <Route path='/password/reset/:token' component={ResetPassword} exact />
-          <ProtectedRoute path='/profile' isAdmin={true} component={Profile} exact />
+          <ProtectedRoute path='/profile' component={Profile} exact />
           <ProtectedRoute path='/profile/update' component={UpdateProfile} exact />
           <ProtectedRoute path='/password/update' component={UpdatePassword} exact />
           {/* 

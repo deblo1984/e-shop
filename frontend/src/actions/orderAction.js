@@ -62,7 +62,7 @@ export const getUserOrderDetails = (id) => async (dispatch) => {
     try {
         dispatch({ type: USER_ORDER_DETAIL_REQUEST })
         const { data } = await axios.get(`/api/orders/${id}`);
-        console.log(data);
+        // console.log(data);
         dispatch({
             type: USER_ORDER_DETAIL_SUCCESS,
             payload: data.order

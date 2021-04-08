@@ -25,7 +25,7 @@ const OrderDetails = ({ match }) => {
     const shippingDetails = `${order.address}, ${order.city}, ${order.postalCode}, ${order.country}`
 
     const isPaid = order.paymentStatus === 'succeeded' ? true : false
-
+    // console.log(order.user);
     return (
         <Fragment>
             <MetaData title={'Order Details'} />
@@ -38,9 +38,9 @@ const OrderDetails = ({ match }) => {
                             <h1 className="my-5">Order # {order._id}</h1>
 
                             <h4 className="mb-4">Shipping Info</h4>
-                            <p><b>Name:</b> {order && order.userId}</p>
+                            <p><b>Name:</b> {order.user && order.user.name}</p>
                             <p><b>Phone:</b> {order && order.phone}</p>
-                            <p className="mb-4"><b>Address:</b>{shippingDetails}</p>
+                            <p className="mb-4"><b>Address:</b> {shippingDetails}</p>
                             <p><b>Amount:</b> ${order.totalPrice}</p>
 
                             <hr />

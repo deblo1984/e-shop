@@ -87,32 +87,36 @@ exports.create = asyncHandler(async (req, res) => {
 exports.update = asyncHandler(async (req, res) => {
     try {
         const user = await User.findByPk(req.user.id, { include: [UserAvatar] });
+        //console.log(user);
         await user.removeRoles(user.id);
-        const imageId = user.userAvatar.publicId;
+        const imageId = user.userAvatar && user.userAvatar.publicId;
 
-        if (req.body.avatar && req.body.avatar !== '') {
-
+        if (imageId && req.body.avatar) {
             // destory user avatar in cloudinary
             await cloudinary.v2.uploader.destroy(imageId);
             //delete avatar record from database
             await UserAvatar.destroy({
                 where: { userId: user.id }
             })
-
+        }
+        if (req.body.avatar && req.body.avatar !== '') {
             const result = await cloudinary.v2.uploader.upload(req.body.avatar, {
                 folder: 'avatar',
-                width: 150,
+                width: 300,
                 crop: 'scale'
             })
-
+            console.log(result);
             await UserAvatar.create({
-                userId: user.id,
+                userId: req.user.id,
                 publicId: result.public_id,
                 url: result.secure_url
             })
         }
 
-        await user.update(req.body,
+        await user.update({
+            name: req.body.name,
+            email: req.body.email,
+        },
             { where: { id: req.user.id } })
 
         if (req.body.roles) {
@@ -127,7 +131,7 @@ exports.update = asyncHandler(async (req, res) => {
                 where: {
                     name: { [Op.or]: ['user'] }
                 }
-            }, { transaction: t })
+            })
             await user.setRoles(roles,)
         }
 
@@ -137,9 +141,10 @@ exports.update = asyncHandler(async (req, res) => {
             message: 'user has been updated'
         })
     } catch (error) {
+        console.log(error)
         return res.send({
             success: false,
-            message: 'shit happens'
+            message: error
         })
 
     }

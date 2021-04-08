@@ -51,6 +51,7 @@ const UpdateProfile = ({ history }) => {
         formData.set('name', name);
         formData.set('email', email);
         formData.set('avatar', avatar);
+        console.log(formData)
         dispatch(updateProfile(formData));
     }
 
@@ -120,7 +121,7 @@ const UpdateProfile = ({ history }) => {
                                         accept='image/*'
                                         onChange={onChange}
                                     />
-                                    <label className='custom-file-label' for='customFile'>
+                                    <label className='custom-file-label' htmlFor='customFile'>
                                         Choose Avatar
                                 </label>
                                 </div>
