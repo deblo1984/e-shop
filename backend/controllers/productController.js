@@ -74,10 +74,39 @@ exports.findAll = (req, res) => {
             });
         }).catch(err => {
             res.status(500).send({
-                message: 'shit happen'
+                message: 'awww shit happen'
             })
         })
 }
+
+exports.adminFindAll = asyncHandler(async (req, res) => {
+    const { page, size, name } = req.query;
+    const { limit, offset } = getPagination(page, size);
+    const condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
+
+    Product.findAndCountAll({
+        distinct: true, order: [['created_at', 'desc']], where: condition, limit, offset,
+        include: { model: Photo, required: true, separate: true },
+    })
+        .then(data => {
+            //const response = getPagingData(products, page, limit);
+            const { count: productsCount, rows: products } = data;
+            const currentPage = page ? +page : 1;
+            const totalPages = Math.ceil(productsCount / limit);
+            res.send({
+                success: true,
+                productsCount,
+                limit,
+                products,
+                totalPages,
+                currentPage
+            });
+        }).catch(err => {
+            res.status(500).send({
+                message: 'awww shit happen'
+            })
+        })
+})
 
 exports.findOne = asyncHandler(async (req, res) => {
     const product = await Product.findByPk(req.params.id, { include: Photo })

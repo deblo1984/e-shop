@@ -9,7 +9,9 @@ router.route('/products').get(product.findAll);
 router.route('/products/:id').get(product.findOne);
 router.route('/products/:id/review').get(isAuthenticated, product.productReviews);
 
-router.route('/admin/products/create').post(isAuthenticated, authorizeRoles('admin', 'user'),
+
+router.route('/admin/products').get(isAuthenticated, authorizeRoles('admin'), product.adminFindAll);
+router.route('/admin/products/create').post(isAuthenticated, authorizeRoles('admin'),
     validateProduct, product.create);
 router.route('/admin/products/:id').delete(isAuthenticated, authorizeRoles('admin'),
     product.delete);

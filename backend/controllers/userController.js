@@ -1,4 +1,5 @@
 const asyncHandler = require('express-async-handler');
+const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs');
 const cloudinary = require('cloudinary');
 const crypto = require('crypto');
@@ -113,10 +114,7 @@ exports.update = asyncHandler(async (req, res) => {
             })
         }
 
-        await user.update({
-            name: req.body.name,
-            email: req.body.email,
-        },
+        await user.update(req.body,
             { where: { id: req.user.id } })
 
         if (req.body.roles) {

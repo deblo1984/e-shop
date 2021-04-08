@@ -10,6 +10,8 @@ import Search from './Search'
 import { Route } from 'react-router-dom'
 import { hasRole } from '../route/Auth'
 
+import '../../App.css'
+
 const Header = () => {
     const { loading, user } = useSelector(state => state.auth)
     const alert = useAlert();
@@ -76,7 +78,7 @@ const Header = () => {
                             </Link>
                             <div className='dropdown-menu' aria-labelledby='dropdownMenuButton'>
                                 {hasRole(user, ['admin']) && (
-                                    <Link className="dropdown-item" to="/dashboard">Dashboard</Link>
+                                    <Link className="dropdown-item" to="/admin/dashboard">Dashboard</Link>
                                 )}
                                 <Link className="dropdown-item" to="/orders">Orders</Link>
                                 <Link className="dropdown-item" to="/profile">Profile</Link>

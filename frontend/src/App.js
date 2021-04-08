@@ -1,5 +1,5 @@
-import './App.css'
 import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 
 import Footer from './components/layout/Footer'
@@ -28,10 +28,15 @@ import OrderSuccess from './components/cart/OrderSuccess'
 import OrderList from './components/order/OrderList'
 import OrderDetails from './components/order/OrderDetails'
 
+//admin imports
+import Dashboard from './components/admin/Dashboard'
+import ProductsList from './components/admin/ProductsList'
+
 //payments import
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import axios from 'axios'
+import { hasRole } from './components/route/Auth'
 
 function App() {
 
@@ -50,6 +55,8 @@ function App() {
     getStripeApiKey();
 
   }, [])
+
+  const { user, isAuthenticated, loading } = useSelector(state => state.auth)
 
   return (
     <Router>
@@ -80,12 +87,17 @@ function App() {
           <ProtectedRoute path='/profile' component={Profile} exact />
           <ProtectedRoute path='/profile/update' component={UpdateProfile} exact />
           <ProtectedRoute path='/password/update' component={UpdatePassword} exact />
-          {/* 
+        </div>
+
+        <ProtectedRoute path='/admin/dashboard' isAdmin={true} component={Dashboard} exact />
+        <ProtectedRoute path='/admin/products' isAdmin={true} component={ProductsList} exact />
+        {/* 
           protected routes using role privalage
           <ProtectedRoute path='/profile' isAdmin={true} component={Profile} exact />
           */}
-        </div>
-        <Footer />
+        {!loading && (!isAuthenticated || !hasRole(user, ['admin'])) && (
+          <Footer />
+        )}
       </div>
     </Router>
   );

@@ -1,6 +1,9 @@
 import axios from 'axios'
 
 import {
+    ADMIN_PRODUCTS_FAIL,
+    ADMIN_PRODUCTS_REQUEST,
+    ADMIN_PRODUCTS_SUCCESS,
     ALL_PRODUCTS_FAIL,
     ALL_PRODUCTS_REQUEST,
     ALL_PRODUCTS_SUCCESS,
@@ -26,6 +29,23 @@ export const getProducts = (keyword = '', currentPage = 1) => async (dispatch) =
         dispatch({
             type: ALL_PRODUCTS_FAIL,
             payload: error.response.data.message
+        })
+    }
+}
+
+export const adminGetProducts = (keyword = '', currentPage = 1) => async (dispatch) => {
+    try {
+        dispatch({ type: ADMIN_PRODUCTS_REQUEST })
+        const { data } = await axios.get(`/api/admin/products`)
+        console.log(data)
+        dispatch({
+            type: ADMIN_PRODUCTS_SUCCESS,
+            payload: data
+        })
+    } catch (error) {
+        dispatch({
+            type: ADMIN_PRODUCTS_FAIL,
+            payload: error.message
         })
     }
 }

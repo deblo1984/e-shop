@@ -8,6 +8,8 @@ const path = require('path');
 
 const { notFound, errorHandler } = require('./middlewares/error')
 
+dotenv.config();
+
 const tutorial = require('./routes/tutorial.routes');
 const category = require('./routes/category.routes');
 const product = require('./routes/product.routes');
@@ -18,9 +20,9 @@ const order = require('./routes/order.routes');
 const stripePayment = require('./routes/payment.routes');
 const db = require('./models')
 
-const app = express();
 
-dotenv.config();
+
+const app = express();
 
 if (process.env.NODE_ENV === 'DEVELOPMENT') {
     app.use(morgan('dev'))

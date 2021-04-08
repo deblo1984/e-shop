@@ -5,17 +5,22 @@ import {
     CLEAR_ERRORS,
     PRODUCT_DETAILS_REQUEST,
     PRODUCT_DETAILS_SUCCESS,
-    PRODUCT_DETAILS_FAIL
+    PRODUCT_DETAILS_FAIL,
+    ADMIN_PRODUCTS_REQUEST,
+    ADMIN_PRODUCTS_SUCCESS,
+    ADMIN_PRODUCTS_FAIL
 } from '../constants/productConstant'
 
 export const productsReducer = (state = { products: [] }, action) => {
     switch (action.type) {
         case ALL_PRODUCTS_REQUEST:
+        case ADMIN_PRODUCTS_REQUEST:
             return {
                 loading: true,
                 products: []
             }
         case ALL_PRODUCTS_SUCCESS:
+        case ADMIN_PRODUCTS_SUCCESS:
             return {
                 loading: false,
                 products: action.payload.products,
@@ -23,6 +28,7 @@ export const productsReducer = (state = { products: [] }, action) => {
                 limit: action.payload.limit
             }
         case ALL_PRODUCTS_FAIL:
+        case ADMIN_PRODUCTS_FAIL:
             return {
                 loading: false,
                 error: action.payload
