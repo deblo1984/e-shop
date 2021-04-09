@@ -31,12 +31,14 @@ import OrderDetails from './components/order/OrderDetails'
 //admin imports
 import Dashboard from './components/admin/Dashboard'
 import ProductsList from './components/admin/ProductsList'
+import CreateProduct from './components/admin/CreateProduct'
+import UpdateProduct from './components/admin/UpdateProduct'
 
 //payments import
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import axios from 'axios'
-import { hasRole } from './components/route/Auth'
+//import { hasRole } from './components/route/Auth'
 
 function App() {
 
@@ -91,13 +93,15 @@ function App() {
 
         <ProtectedRoute path='/admin/dashboard' isAdmin={true} component={Dashboard} exact />
         <ProtectedRoute path='/admin/products' isAdmin={true} component={ProductsList} exact />
+        <ProtectedRoute path='/admin/products/create' isAdmin={true} component={CreateProduct} exact />
+        <ProtectedRoute path='/admin/products/:id/update' isAdmin={true} component={UpdateProduct} exact />
         {/* 
           protected routes using role privalage
           <ProtectedRoute path='/profile' isAdmin={true} component={Profile} exact />
           */}
-        {!loading && (!isAuthenticated || !hasRole(user, ['admin'])) && (
-          <Footer />
-        )}
+
+        <Footer />
+
       </div>
     </Router>
   );

@@ -8,13 +8,19 @@ import Sidebar from './Sidebar'
 
 import { useAlert } from 'react-alert'
 import { useDispatch, useSelector } from 'react-redux'
-import { adminGetProducts, clearErrors } from '../../actions/productAction'
+import { adminGetProducts, clearErrors, deleteProduct } from '../../actions/productAction'
+import { DELETE_PRODUCTS_RESET } from '../../constants/productConstant'
 
 const ProductsList = ({ history }) => {
     const alert = useAlert();
     const dispatch = useDispatch();
 
-    const { loading, error, products } = useSelector(state => state.products);
+    const { loading, error, products } = useSelector(state => state.adminProducts);
+    const { error: errorDeleted, isDeleted } = useSelector(state => state.deleteProduct);
+
+    const deleteProductHandler = (id) => {
+        dispatch(deleteProduct(id))
+    }
 
     useEffect(() => {
         dispatch(adminGetProducts());
@@ -22,7 +28,17 @@ const ProductsList = ({ history }) => {
             alert.error(error)
             dispatch(clearErrors())
         }
-    }, [dispatch, alert, error])
+        if (errorDeleted) {
+            alert.error(error);
+            dispatch(clearErrors())
+        }
+        if (isDeleted) {
+            alert.success('Product deleted successfully')
+            history.push('/admin/products')
+            dispatch({ type: DELETE_PRODUCTS_RESET })
+        }
+
+    }, [dispatch, alert, error, errorDeleted, history, isDeleted])
 
     const setProducts = () => {
         const data = {
@@ -62,10 +78,10 @@ const ProductsList = ({ history }) => {
                 price: `$${product.price}`,
                 stock: product.stock,
                 actions: <Fragment>
-                    <Link to={`/admin/product/${product.id}`} className="btn btn-primary py-1 px-2">
+                    <Link to={`/admin/products/${product.id}/update`} className="btn btn-primary py-1 px-2">
                         <i className="fa fa-pencil"></i>
                     </Link>
-                    <button className="btn btn-danger py-1 px-2 ml-2" >
+                    <button className="btn btn-danger py-1 px-2 ml-2" onClick={() => deleteProductHandler(product.id)} >
                         <i className="fa fa-trash"></i>
                     </button>
                 </Fragment>

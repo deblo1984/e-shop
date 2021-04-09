@@ -1,6 +1,7 @@
 const db = require('../models');
 const asyncHandler = require('express-async-handler');
 const { getPagination } = require('../utils/pagination');
+const cloudinary = require('cloudinary')
 const { sequelize } = require('../models');
 
 const Product = db.product;
@@ -10,7 +11,27 @@ const User = db.user;
 const Op = db.Sequelize.Op;
 
 exports.create = asyncHandler(async (req, res) => {
-    const t = await sequelize.transaction();
+
+    let images = []
+    if (typeof req.body.images === 'string') {
+        images.push(req.body.images)
+    } else {
+        images = req.body.images
+    }
+
+    let imagesLinks = [];
+
+    for (let i = 0; i < images.length; i++) {
+        const result = await cloudinary.v2.uploader.upload(images[i], {
+            folder: 'products'
+        });
+
+        imagesLinks.push({
+            publicId: result.public_id,
+            url: result.secure_url
+        })
+    }
+
     const {
         name,
         description,
@@ -18,7 +39,10 @@ exports.create = asyncHandler(async (req, res) => {
         stock,
     } = req.body
     const userId = req.user.id
-    photo = req.body.photos;
+    const photo = imagesLinks;
+    //console.log(photo[0].publicId)
+
+    const t = await sequelize.transaction();
 
     try {
         const product = await Product.create({
@@ -26,6 +50,7 @@ exports.create = asyncHandler(async (req, res) => {
         }, /*{
             include: [Photo]
         },*/ { transaction: t })
+        //console.log(product)
         for (let i = 0; i < photo.length; i++) {
             await Photo.create({
                 publicId: photo[i].publicId,
@@ -38,13 +63,15 @@ exports.create = asyncHandler(async (req, res) => {
         await t.commit();
 
         return res.status(201).json({
-            success: true
+            success: true,
+            product: product
         })
     } catch (error) {
-        console.log(error.message);
+        //console.log(error);
         await t.rollback
         return res.status(500).send({
-            message: 'shit happen'
+            success: false,
+            message: error
         })
     }
 })
@@ -117,16 +144,28 @@ exports.findOne = asyncHandler(async (req, res) => {
 })
 
 exports.delete = asyncHandler(async (req, res) => {
+
+    const product = await Product.findByPk(req.params.id, {
+        include: [{ model: Photo }]
+    })
+
+    if (product.photos.length > 0) {
+        for (let i = 0; i < product.photos.length; i++) {
+            const deleted = await cloudinary.v2.uploader.destroy(product.photos[i].publicId)
+        }
+    }
+
     const result = await Product.destroy({
         where: { id: req.params.id }
     })
     if (result) {
-        res.status(201).json({
-            status: true
+        res.status(201).send({
+            success: true,
+            message: 'Product deleted'
         })
     } else {
-        res.status(400).json({
-            status: false,
+        res.status(400).send({
+            success: false,
             message: 'cannot delete product'
         })
     }
