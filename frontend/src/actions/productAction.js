@@ -46,9 +46,10 @@ export const getProducts = (keyword = '', currentPage = 1) => async (dispatch) =
 
 export const adminGetProducts = (keyword = '', currentPage = 1) => async (dispatch) => {
     try {
+
         dispatch({ type: ADMIN_PRODUCTS_REQUEST })
         const { data } = await axios.get(`/api/admin/products`)
-        console.log(data)
+
         dispatch({
             type: ADMIN_PRODUCTS_SUCCESS,
             payload: data

@@ -21,21 +21,37 @@ import {
     userOrdersReducer,
     userOrderDetailsReducer
 } from './reducers/orderReducer'
+import {
+    categoryReducer,
+    createCategoryReducer,
+    deleteCategoryReducer,
+    getCategoryByIdReducer,
+    updateCatgoryReducer
+} from './reducers/categoryReducers'
 
 const reducer = combineReducers({
+    //products store
     products: productsReducer,
     createProducts: createProductReducer,
     deleteProduct: deleteProductReducer,
     updateProduct: updateProductReducer,
     productDetails: productDetailsReducer,
+    adminProducts: adminProductsReducer,
+    //authetication store
     auth: userReducer,
     profile: profileReducer,
     forgotPassword: forgotPasswordReducer,
+    //cart and order store
     cart: cartReducer,
     newOrder: newOrderReducer,
     userOrders: userOrdersReducer,
     userOrderDetails: userOrderDetailsReducer,
-    adminProducts: adminProductsReducer
+    //category store
+    category: categoryReducer,
+    createCategory: createCategoryReducer,
+    deleteCategory: deleteCategoryReducer,
+    updateCategory: updateCatgoryReducer,
+    getCategoryById: getCategoryByIdReducer,
 })
 
 let initialState = {

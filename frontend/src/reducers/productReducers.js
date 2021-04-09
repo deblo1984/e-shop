@@ -161,6 +161,7 @@ export const deleteProductReducer = (state = {}, action) => {
         case DELETE_PRODUCTS_FAIL:
             return {
                 ...state,
+                loading: false,
                 error: action.payload
             }
         case DELETE_PRODUCTS_RESET:

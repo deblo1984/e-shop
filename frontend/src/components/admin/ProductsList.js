@@ -87,7 +87,6 @@ const ProductsList = ({ history }) => {
                 </Fragment>
             })
         })
-        console.log(data)
         return data;
     }
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+//import { useSelector } from 'react-redux'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 
 import Footer from './components/layout/Footer'
@@ -38,6 +38,7 @@ import UpdateProduct from './components/admin/UpdateProduct'
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import axios from 'axios'
+import CategoryList from './components/admin/CategoryList'
 //import { hasRole } from './components/route/Auth'
 
 function App() {
@@ -58,7 +59,7 @@ function App() {
 
   }, [])
 
-  const { user, isAuthenticated, loading } = useSelector(state => state.auth)
+  //const { user, isAuthenticated, loading } = useSelector(state => state.auth)
 
   return (
     <Router>
@@ -95,6 +96,7 @@ function App() {
         <ProtectedRoute path='/admin/products' isAdmin={true} component={ProductsList} exact />
         <ProtectedRoute path='/admin/products/create' isAdmin={true} component={CreateProduct} exact />
         <ProtectedRoute path='/admin/products/:id/update' isAdmin={true} component={UpdateProduct} exact />
+        <ProtectedRoute path='/admin/categories' isAdmin={true} component={CategoryList} exact />
         {/* 
           protected routes using role privalage
           <ProtectedRoute path='/profile' isAdmin={true} component={Profile} exact />

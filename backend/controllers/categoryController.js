@@ -6,13 +6,15 @@ const Op = db.Sequelize.Op;
 exports.create = asyncHandler(async (req, res, next) => {
     if (!req.body.name) {
         res.status(400).json({
+            success: false,
             message: 'name cannot empty'
         })
     }
     const result = await Category.create({ name: req.body.name })
     console.log(result);
     return res.status(201).json({
-        success: true
+        success: true,
+        message: 'Category created successfully'
     })
 })
 
@@ -33,7 +35,7 @@ exports.findOne = asyncHandler(async (req, res) => {
             message: 'Not found'
         })
     }
-    return res.json({
+    return res.send({
         success: true,
         category
     })
@@ -45,7 +47,8 @@ exports.update = asyncHandler(async (req, res) => {
     })
     if (result) {
         res.status(201).json({
-            success: true
+            success: true,
+            message: 'category updated successfully'
         })
     } else {
         res.status(400).json({
@@ -61,7 +64,8 @@ exports.delete = asyncHandler(async (req, res) => {
     })
     if (result) {
         res.status(201).json({
-            success: true
+            success: true,
+            message: 'category deleted'
         })
     } else {
         res.status(400).json({

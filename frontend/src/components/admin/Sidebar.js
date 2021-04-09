@@ -9,6 +9,19 @@ const Sidebar = () => {
                     <li>
                         <Link to="/admin/dashboard"><i className="fa fa-tachometer"></i> Dashboard</Link>
                     </li>
+                    <li>
+                        <a href="#categorySubmenu" data-toggle="collapse" aria-expanded="false" className="dropdown-toggle"><i
+                            className="fa fa-book"></i> Categories</a>
+                        <ul className="collapse list-unstyled" id="categorySubmenu">
+                            <li>
+                                <Link to="/admin/categories"><i className="fa fa-clipboard"></i> All</Link>
+                            </li>
+
+                            <li>
+                                <Link to="/admin/category/create"><i className="fa fa-plus"></i> Create</Link>
+                            </li>
+                        </ul>
+                    </li>
 
                     <li>
                         <a href="#productSubmenu" data-toggle="collapse" aria-expanded="false" className="dropdown-toggle"><i
