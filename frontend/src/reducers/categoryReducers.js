@@ -1,4 +1,4 @@
-import { CLEAR_ERRORS, CREATE_CATEGORY_FAIL, CREATE_CATEGORY_REQUEST, CREATE_CATEGORY_SUCCESS, DELETE_CATEGORY_FAIL, DELETE_CATEGORY_REQUEST, DELETE_CATEGORY_RESET, DELETE_CATEGORY_SUCCESS, GET_CATEGORY_BYID_FAIL, GET_CATEGORY_BYID_REQUEST, GET_CATEGORY_BYID_SUCCESS, GET_CATEGORY_FAIL, GET_CATEGORY_REQUEST, GET_CATEGORY_SUCCESS, UPDATE_CATEGORY_FAIL, UPDATE_CATEGORY_REQUEST, UPDATE_CATEGORY_RESET, UPDATE_CATEGORY_SUCCESS } from "../constants/categoryConstant"
+import { CLEAR_ERRORS, CREATE_CATEGORY_FAIL, CREATE_CATEGORY_REQUEST, CREATE_CATEGORY_RESET, CREATE_CATEGORY_SUCCESS, DELETE_CATEGORY_FAIL, DELETE_CATEGORY_REQUEST, DELETE_CATEGORY_RESET, DELETE_CATEGORY_SUCCESS, GET_CATEGORY_BYID_FAIL, GET_CATEGORY_BYID_REQUEST, GET_CATEGORY_BYID_RESET, GET_CATEGORY_BYID_SUCCESS, GET_CATEGORY_FAIL, GET_CATEGORY_REQUEST, GET_CATEGORY_SUCCESS, UPDATE_CATEGORY_FAIL, UPDATE_CATEGORY_REQUEST, UPDATE_CATEGORY_RESET, UPDATE_CATEGORY_SUCCESS } from "../constants/categoryConstant"
 
 export const categoryReducer = (state = { categories: [] }, action) => {
     switch (action.type) {
@@ -45,6 +45,10 @@ export const getCategoryByIdReducer = (state = { category: {} }, action) => {
                 loading: false,
                 error: action.payload
             }
+        case GET_CATEGORY_BYID_RESET:
+            return {
+                category: {}
+            }
         case CLEAR_ERRORS:
             return {
                 ...state,
@@ -74,6 +78,11 @@ export const createCategoryReducer = (state = { category: {} }, action) => {
                 loading: false,
                 error: action.payload
             }
+        case CREATE_CATEGORY_RESET:
+            return {
+                ...state,
+                success: false
+            }
         case CLEAR_ERRORS:
             return {
                 ...state,
@@ -85,7 +94,7 @@ export const createCategoryReducer = (state = { category: {} }, action) => {
     }
 }
 
-export const updateCatgoryReducer = (state = {}, action) => {
+export const updateCategoryReducer = (state = {}, action) => {
     switch (action.type) {
         case UPDATE_CATEGORY_REQUEST:
             return {

@@ -28,7 +28,7 @@ export const getCategories = () => async (dispatch) => {
         dispatch({
             type: GET_CATEGORY_SUCCESS,
             payload: data
-        })
+        });
 
     } catch (error) {
         dispatch({
@@ -49,7 +49,7 @@ export const getCategoryById = (id) => async (dispatch) => {
 
         dispatch({
             type: GET_CATEGORY_BYID_SUCCESS,
-            payload: data.category
+            payload: data
         })
 
     } catch (error) {
@@ -71,7 +71,7 @@ export const createCategory = (categoryData) => async (dispatch) => {
             }
         }
 
-        const { data } = await axios.post('/api/admin/category/create', categoryData, config)
+        const { data } = await axios.post('/api/admin/category', categoryData, config)
 
         dispatch({
             type: CREATE_CATEGORY_SUCCESS,

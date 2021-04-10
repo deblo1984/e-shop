@@ -11,9 +11,15 @@ exports.create = asyncHandler(async (req, res, next) => {
         })
     }
     const result = await Category.create({ name: req.body.name })
-    console.log(result);
+    if (!result) {
+        return res.send({
+            success: false,
+            message: 'cannot create category'
+        })
+    }
     return res.status(201).json({
         success: true,
+        category: result,
         message: 'Category created successfully'
     })
 })

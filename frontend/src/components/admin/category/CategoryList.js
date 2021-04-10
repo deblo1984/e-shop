@@ -2,27 +2,42 @@ import React, { Fragment, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { MDBDataTable } from 'mdbreact'
 
-import MetaData from '../layout/MetaData'
-import Loader from '../layout/Loader'
-import Sidebar from './Sidebar'
+import MetaData from '../../layout/MetaData'
+import Loader from '../../layout/Loader'
+import Sidebar from '../Sidebar'
 
-//import { useAlert } from 'react-alert'
+import { useAlert } from 'react-alert'
 import { useDispatch, useSelector } from 'react-redux'
-import { getCategories } from '../../actions/categoryAction'
-import Message from '../layout/Message'
+import { getCategories, deleteCategory, clearErrors } from '../../../actions/categoryAction'
+import Message from '../../layout/Message'
+import { DELETE_CATEGORY_RESET } from '../../../constants/categoryConstant'
 
 
 const CategoryList = ({ history }) => {
 
-    //const alert = useAlert();
+    const alert = useAlert();
     const dispatch = useDispatch();
 
     const { loading, error, categories } = useSelector(state => state.category);
+    const { error: deleteError, isDeleted } = useSelector(state => state.deleteCategory)
 
     useEffect(() => {
         dispatch(getCategories())
+        if (error) {
+            alert.error(error)
+            dispatch(clearErrors())
+        }
+        if (deleteError) {
+            alert.error(deleteError)
+            dispatch(clearErrors())
+        }
+        if (isDeleted) {
+            alert.success('Category deleted')
+            history.push('/admin/categories')
+            dispatch({ type: DELETE_CATEGORY_RESET })
+        }
 
-    }, [dispatch])
+    }, [dispatch, error, deleteError, isDeleted, history, alert])
 
     const setCategories = () => {
         const data = {
@@ -53,7 +68,7 @@ const CategoryList = ({ history }) => {
                         <Link to={`/admin/category/${category.id}/update`} className='btn btn-primary py-1 px-2'>
                             <i className='fa fa-pencil'></i>
                         </Link>
-                        <button className='btn btn-danger py-1 px-2 ml-2'>
+                        <button className='btn btn-danger py-1 px-2 ml-2' onClick={() => { deleteHandler(category.id) }}>
                             <i className='fa fa-trash'></i>
                         </button>
                     </Fragment>
@@ -62,6 +77,13 @@ const CategoryList = ({ history }) => {
         }
         return data
 
+    }
+
+    //delete category handler
+    const deleteHandler = (id) => {
+        if (window.confirm('are you sure')) {
+            dispatch(deleteCategory(id));
+        }
     }
 
     return (

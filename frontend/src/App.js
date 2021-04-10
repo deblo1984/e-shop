@@ -38,7 +38,11 @@ import UpdateProduct from './components/admin/UpdateProduct'
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import axios from 'axios'
-import CategoryList from './components/admin/CategoryList'
+
+//category import
+import CategoryList from './components/admin/category/CategoryList'
+import CreateCategory from './components/admin/category/Create'
+import UpdateCategory from './components/admin/category/Update'
 //import { hasRole } from './components/route/Auth'
 
 function App() {
@@ -93,10 +97,14 @@ function App() {
         </div>
 
         <ProtectedRoute path='/admin/dashboard' isAdmin={true} component={Dashboard} exact />
+
         <ProtectedRoute path='/admin/products' isAdmin={true} component={ProductsList} exact />
         <ProtectedRoute path='/admin/products/create' isAdmin={true} component={CreateProduct} exact />
         <ProtectedRoute path='/admin/products/:id/update' isAdmin={true} component={UpdateProduct} exact />
+
         <ProtectedRoute path='/admin/categories' isAdmin={true} component={CategoryList} exact />
+        <ProtectedRoute path='/admin/category/create' isAdmin={true} component={CreateCategory} exact />
+        <ProtectedRoute path='/admin/category/:id/update' isAdmin={true} component={UpdateCategory} />
         {/* 
           protected routes using role privalage
           <ProtectedRoute path='/profile' isAdmin={true} component={Profile} exact />

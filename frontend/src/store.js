@@ -26,7 +26,7 @@ import {
     createCategoryReducer,
     deleteCategoryReducer,
     getCategoryByIdReducer,
-    updateCatgoryReducer
+    updateCategoryReducer
 } from './reducers/categoryReducers'
 
 const reducer = combineReducers({
@@ -50,7 +50,7 @@ const reducer = combineReducers({
     category: categoryReducer,
     createCategory: createCategoryReducer,
     deleteCategory: deleteCategoryReducer,
-    updateCategory: updateCatgoryReducer,
+    updateCategory: updateCategoryReducer,
     getCategoryById: getCategoryByIdReducer,
 })
 
